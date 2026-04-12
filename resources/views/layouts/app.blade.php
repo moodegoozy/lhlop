@@ -77,7 +77,9 @@
     </style>
 
     <!-- Main Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="/build/assets/app-2yfFkqO-.css">
+    <script src="/build/assets/vendor-l0sNRNKZ.js" defer></script>
+    <script src="/build/assets/app-BP5eHSZ0.js" defer></script>
     @livewireStyles
 
     <!-- jQuery and Select2 for dynamic components -->
@@ -528,7 +530,7 @@
 
         <!-- Content -->
         <div class="relative z-10 animate-fade-in">
-            {{ $slot }}
+            @yield('content')
         </div>
     </main>
 

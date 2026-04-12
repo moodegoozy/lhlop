@@ -1,0 +1,28 @@
+# Laravel
+/laravel-app/vendor/
+/laravel-app/node_modules/
+/laravel-app/.env
+/laravel-app/storage/*.key
+/laravel-app/storage/logs/*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Compiled files
+*.cache
+
+# Keep storage structure
+!/laravel-app/storage/
+!/laravel-app/storage/app/
+!/laravel-app/storage/framework/
+!/laravel-app/storage/logs/
+/laravel-app/storage/framework/cache/*
+/laravel-app/storage/framework/sessions/*
+/laravel-app/storage/framework/views/*
