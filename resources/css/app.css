@@ -1,0 +1,1923 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+@plugin 'tailwind-scrollbar';
+
+/* تحسين تحميل الخطوط للأداء العالي */
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap");
+@import "@abdulrysr/saudi-riyal-new-symbol-font/style.css";
+
+/* ==========================================================================
+   BASE STYLES - الأنماط الأساسية
+   ========================================================================== */
+@layer base {
+    /* تحسين الخطوط مع دعم كامل للعربية والإنجليزية */
+    html {
+        font-family: "Inter", "Cairo", -apple-system, BlinkMacSystemFont,
+            "Segoe UI", Roboto, sans-serif;
+        scroll-behavior: smooth;
+    }
+
+    html[dir="rtl"] {
+        font-family: "Cairo", "Inter", -apple-system, BlinkMacSystemFont,
+            "Segoe UI", Roboto, sans-serif;
+    }
+
+    html[dir="ltr"] {
+        font-family: "Inter", "Cairo", -apple-system, BlinkMacSystemFont,
+            "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+        background: linear-gradient(
+            135deg,
+            rgb(248 250 252) 0%,
+            rgb(241 245 249) 25%,
+            rgb(236 254 255) 50%,
+            rgb(240 253 250) 75%,
+            rgb(249 250 251) 100%
+        );
+        color: rgb(15 23 42);
+        line-height: 1.6;
+        min-height: 100vh;
+    }
+
+    .dark body {
+        background: linear-gradient(
+            135deg,
+            rgb(2 6 23) 0%,
+            rgb(15 23 42) 25%,
+            rgb(30 41 59) 50%,
+            rgb(15 23 42) 75%,
+            rgb(2 6 23) 100%
+        );
+        color: rgb(248 250 252);
+    }
+
+    /* FOUC Prevention */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    @font-face {
+        font-family: "SaudiRiyalSymbol";
+        src: url("/fonts/saudiriyalsymbol.woff2") format("woff2"),
+            url("/fonts/saudiriyalsymbol.woff") format("woff"),
+            url("/fonts/saudiriyalsymbol.otf") format("opentype");
+    }
+}
+
+/* ==========================================================================
+   COMPONENT STYLES - أنماط المكونات
+   ========================================================================== */
+@layer components {
+    /* Sidebar Navigation Links */
+    .admin-sidebar-link {
+        @apply flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200;
+        @apply text-gray-700 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-gray-700/60;
+    }
+
+    .admin-sidebar-link.active {
+        @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg;
+    }
+
+    .admin-sidebar-link-icon {
+        @apply flex items-center justify-center w-5 h-5 shrink-0;
+    }
+
+    .admin-sidebar-link-text {
+        @apply mr-3 font-medium;
+    }
+
+    /* User Dropdown Menu Items */
+    .admin-dropdown-item {
+        @apply flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-gray-700/60 transition-colors;
+    }
+
+    .admin-dropdown-item svg {
+        @apply ml-2 shrink-0;
+    }
+
+    /* Glass Effect for Admin Components */
+    .admin-glass {
+        @apply bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm;
+    }
+
+    /* Toggle Buttons for Language Switcher */
+    .admin-toggle-button {
+        @apply px-3 py-1.5 text-sm font-medium transition-all duration-300 ease-out;
+    }
+
+    .admin-toggle-button:not(.active) {
+        @apply text-gray-600 hover:text-gray-900 dark:text-white/70 dark:hover:text-white hover:bg-white/10;
+    }
+
+    .admin-toggle-button.active {
+        @apply text-gray-900 dark:text-white bg-white/20 font-semibold;
+    }
+
+    /* Admin Background Animations */
+    .admin-bg-blob {
+        @apply absolute w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-10;
+        animation: admin-blob 7s infinite;
+    }
+
+    .admin-bg-blob-blue {
+        @apply bg-blue-400 top-10 left-10;
+    }
+
+    .admin-bg-blob-purple {
+        @apply bg-purple-400 top-10 right-10;
+        animation-delay: 2s;
+    }
+
+    .admin-bg-blob-pink {
+        @apply bg-pink-400 bottom-10 left-1/2 transform -translate-x-1/2;
+        animation-delay: 4s;
+    }
+
+    /* Admin Sidebar Responsive Behavior */
+    .admin-sidebar {
+        @apply fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 ease-in-out;
+    }
+
+    .admin-sidebar-collapsed {
+        @apply w-16;
+    }
+
+    .admin-sidebar-expanded {
+        @apply w-64;
+    }
+
+    .admin-sidebar-hidden {
+        @apply -translate-x-full;
+    }
+
+    /* Main Content Area Adjustments */
+    .admin-main-content {
+        @apply flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out;
+    }
+
+    .admin-main-content-sidebar-expanded {
+        @apply lg:ml-64;
+    }
+
+    .admin-main-content-sidebar-collapsed {
+        @apply lg:ml-16;
+    }
+
+    .admin-main-content-sidebar-hidden {
+        @apply lg:ml-0;
+    }
+
+    /* Admin Header */
+    .admin-header {
+        @apply flex items-center justify-between h-16 px-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border-b border-white/20 dark:border-gray-700/30 sticky top-0 z-40;
+    }
+
+    /* Admin Control Buttons */
+    .admin-control-btn {
+        @apply p-2 rounded-xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 hover:bg-white/80 dark:hover:bg-gray-700/80 transition-all duration-300;
+    }
+
+    /* Mobile Sidebar Overlay */
+    .admin-mobile-overlay {
+        @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden;
+    }
+
+    /* Admin Flash Messages */
+    .admin-flash-success {
+        @apply mb-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-green-200 dark:border-green-800 rounded-2xl p-4;
+    }
+
+    .admin-flash-error {
+        @apply mb-6 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-red-200 dark:border-red-800 rounded-2xl p-4;
+    }
+
+    .admin-flash-icon-success {
+        @apply w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center ml-3;
+    }
+
+    .admin-flash-icon-error {
+        @apply w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center ml-3;
+    }
+
+    .admin-flash-text-success {
+        @apply text-green-700 dark:text-green-300 font-medium;
+    }
+
+    .admin-flash-text-error {
+        @apply text-red-700 dark:text-red-300 font-medium;
+    }
+
+    /* User Avatar */
+    .admin-user-avatar {
+        @apply w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center;
+    }
+
+    .admin-user-menu {
+        @apply flex items-center space-x-3 space-x-reverse p-2 rounded-xl bg-white dark:bg-gray-800 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 hover:bg-white/80 dark:hover:bg-gray-700/80 transition-all duration-300;
+    }
+
+    /* Admin Background Gradient */
+    .admin-bg-gradient {
+        @apply absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900;
+    }
+
+    /* Logo Container */
+    .admin-logo-container {
+        @apply flex items-center h-16 px-4 border-b border-white/20 dark:border-gray-700/30;
+    }
+
+    .admin-logo-icon {
+        @apply w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shrink-0;
+    }
+
+    /* Section Headers in Sidebar */
+    .admin-sidebar-section-header {
+        @apply text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider;
+    }
+
+    /* Sidebar Footer */
+    .admin-sidebar-footer {
+        @apply p-4 border-t border-white/20 dark:border-gray-700/30;
+    }
+
+    .admin-sidebar-toggle-btn {
+        @apply w-full flex items-center justify-center p-2 rounded-xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-white/20 dark:border-gray-700/30 hover:bg-white/80 dark:hover:bg-gray-700/80 transition-all duration-300;
+    }
+
+    /* Side Panel Styles */
+    .side-panel {
+        @apply fixed inset-y-0 z-40 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-r border-white/30 dark:border-gray-600/40 shadow-2xl transition-all duration-300 ease-in-out overflow-y-auto;
+    }
+
+    .side-panel-left {
+        @apply left-0;
+    }
+
+    .side-panel-right {
+        @apply right-0;
+    }
+
+    .side-panel-collapsed {
+        @apply w-16;
+    }
+
+    .side-panel-expanded {
+        @apply w-80;
+    }
+
+    .side-panel-hidden {
+        @apply -translate-x-full;
+    }
+
+    .side-panel-right.side-panel-hidden {
+        @apply translate-x-full;
+    }
+
+    .side-panel-content {
+        @apply p-6;
+    }
+
+    .side-panel-header {
+        @apply flex items-center justify-between mb-6 pb-4 border-b border-white/20 dark:border-gray-700/30;
+    }
+
+    .side-panel-title {
+        @apply text-xl font-bold text-gray-900 dark:text-white;
+    }
+
+    .side-panel-toggle {
+        @apply p-2 rounded-lg bg-white/60 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 transition-colors;
+    }
+
+    .side-panel-body {
+        @apply space-y-4;
+    }
+
+    /* Responsive side panel adjustments */
+    @media (max-width: 1024px) {
+        .side-panel-expanded {
+            @apply w-64;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .side-panel-expanded {
+            @apply w-full max-w-sm;
+        }
+    }
+
+    /* Main content adjustment for side panels */
+    .main-content-with-side-panel-left {
+        @apply ml-0 lg:ml-80 transition-all duration-300;
+    }
+
+    .main-content-with-side-panel-right {
+        @apply mr-0 lg:mr-80 transition-all duration-300;
+    }
+
+    .main-content-with-side-panel-left.side-panel-collapsed {
+        @apply lg:ml-16;
+    }
+
+    .main-content-with-side-panel-right.side-panel-collapsed {
+        @apply lg:mr-16;
+    }
+
+    /* Overlay for mobile side panels */
+    .side-panel-overlay {
+        @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden transition-opacity duration-300;
+    }
+
+    /* Riyal Symbol */
+    .riyal-symbol {
+        font-family: "SaudiRiyalSymbol", sans-serif;
+        font-size: inherit;
+        margin: 0;
+        color: inherit;
+        font-weight: bold;
+    }
+
+    /* Essential component classes */
+    .teacher-card {
+        @apply relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-gray-700/30 shadow-xl hover:shadow-2xl transition-all duration-500 ease-out overflow-hidden;
+    }
+
+    .teacher-card:hover {
+        @apply transform -translate-y-2 rotate-1;
+    }
+
+    .teacher-avatar {
+        @apply w-full h-48 object-cover transition-transform duration-700 ease-out;
+    }
+
+    .teacher-card:hover .teacher-avatar {
+        @apply scale-110;
+    }
+
+    .teacher-avatar-fallback {
+        @apply w-full h-48 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl font-bold transition-transform duration-700;
+    }
+
+    .teacher-card:hover .teacher-avatar-fallback {
+        @apply scale-110;
+    }
+
+    .container-custom {
+        @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    .container-custom-nopadding {
+        @apply w-full max-w-7xl mx-auto;
+    }
+
+    .btn {
+        @apply relative inline-flex items-center justify-center px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ease-out cursor-pointer border-0 outline-none focus:outline-none transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl;
+    }
+
+    .form-input {
+        @apply w-full px-4 py-3 text-sm lg:text-base font-medium bg-white/80 dark:bg-gray-800/80 border-2 border-gray-200/60 dark:border-gray-600/60 rounded-xl transition-all duration-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 dark:focus:border-blue-400 dark:focus:ring-blue-400/20 placeholder:text-gray-400 dark:placeholder:text-gray-500 backdrop-blur-sm;
+
+        /* Safari fixes for both inputs and selects */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    /* Select-specific styling for form-input class */
+    select.form-input {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+        cursor: pointer;
+    }
+    .dark select.form-input {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%9ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    }
+
+    [dir="rtl"] select.form-input {
+        background-position: left 0.75rem center;
+        padding-right: 1rem;
+        padding-left: 2.5rem;
+    }
+
+    .badge {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+    }
+
+    .badge-success {
+        @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300;
+    }
+
+    .badge-info {
+        @apply bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300;
+    }
+
+    .spinner {
+        @apply w-8 h-8 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin;
+    }
+
+    .loading-overlay {
+        @apply absolute inset-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl flex items-center justify-center z-20;
+    }
+
+    .form-label {
+        @apply block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 select-none;
+    }
+
+    .glass {
+        @apply bg-white/10 dark:bg-gray-900/20 backdrop-blur-2xl border border-white/20 dark:border-gray-700/30 shadow-2xl;
+    }
+
+    .filter-box {
+        @apply bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-white/30 dark:border-gray-600/40 shadow-2xl p-2 rounded-b-3xl;
+    }
+
+    .filter-button {
+        @apply relative px-3 py-1 rounded-xl font-semibold text-sm transition-all duration-300 ease-out transform hover:scale-105 active:scale-95 cursor-pointer select-none min-w-fit;
+    }
+
+    .filter-button-inactive {
+        @apply bg-white/60 dark:bg-gray-700/60 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 shadow-md hover:shadow-lg border border-gray-200/50 dark:border-gray-600/50;
+    }
+
+    .filter-button-blue {
+        @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 hover:from-blue-600 hover:to-blue-700 hover:shadow-blue-600/40;
+    }
+
+    .filter-button-green {
+        @apply bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg shadow-green-500/30 hover:from-green-600 hover:to-green-700 hover:shadow-green-600/40;
+    }
+
+    .filter-button-purple {
+        @apply bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 hover:from-purple-600 hover:to-purple-700 hover:shadow-purple-600/40;
+    }
+
+    .filter-slider {
+        @apply flex flex-nowrap gap-3 overflow-x-auto overflow-y-hidden scrollbar-track-transparent scrollbar-thumb-transparent;
+    }
+
+    /* Header styles */
+    .header-gradient {
+        @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 shadow-lg;
+    }
+
+    .hero-bg {
+        background: radial-gradient(
+                circle at 20% 50%,
+                rgba(120, 119, 198, 0.3) 0%,
+                transparent 50%
+            ),
+            radial-gradient(
+                circle at 80% 20%,
+                rgba(255, 119, 198, 0.3) 0%,
+                transparent 50%
+            ),
+            radial-gradient(
+                circle at 40% 80%,
+                rgba(120, 219, 255, 0.3) 0%,
+                transparent 50%
+            ),
+            linear-gradient(
+                135deg,
+                rgba(59, 130, 246, 0.1) 0%,
+                rgba(139, 92, 246, 0.1) 100%
+            );
+    }
+
+    /* Toggle button styles for header */
+    .toggle-button {
+        @apply px-3 py-1.5 text-sm font-medium transition-all duration-300 ease-out;
+    }
+
+    .toggle-button:not(.active) {
+        @apply text-white/70 hover:text-white hover:bg-white/10;
+    }
+
+    .toggle-button.active {
+        @apply text-white bg-white/20 font-semibold;
+    }
+
+    .toggle-button-normal {
+        @apply px-3 py-1.5 text-sm font-medium transition-all duration-300 ease-out;
+    }
+
+    .toggle-button-normal:not(.active) {
+        @apply text-gray-600 hover:text-gray-900 dark:text-white/70 dark:hover:text-white hover:bg-white/10;
+    }
+
+    .toggle-button-normal.active {
+        @apply text-gray-900 dark:text-white font-semibold;
+    }
+
+    /* Mobile navigation styles */
+    .mobile-nav-link {
+        @apply block px-4 py-3 text-base font-medium transition-colors duration-200 hover:bg-white/10 rounded-lg;
+    }
+
+    .mobile-lang-button {
+        @apply px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ease-out;
+    }
+
+    .mobile-lang-button:not(.active) {
+        @apply text-white/70 bg-white/10 hover:text-white hover:bg-white/20;
+    }
+
+    .mobile-lang-button.active {
+        @apply text-white bg-white/30 font-semibold shadow-lg;
+    }
+
+    /* FORM COMPONENTS - All form-related styles */
+    .form-control {
+        @apply w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm;
+
+        /* Safari select fixes */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    /* Add dropdown arrow only for select elements */
+    select.form-control {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+        cursor: pointer;
+    }
+    .dark select.form-control {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%9ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    }
+    /* RTL support for selects */
+    [dir="rtl"] select.form-control {
+        background-position: left 0.75rem center;
+        padding-right: 1rem;
+        padding-left: 2.5rem;
+    }
+    .form-control:focus {
+        @apply outline-none border-blue-500 ring-2 ring-blue-500/20 shadow-md;
+    }
+    .btn-outline-primary {
+        @apply border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white px-4 py-2 rounded-xl transition-all duration-200 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm;
+    }
+
+    .btn-outline-secondary {
+        @apply border-2 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 px-4 py-2 rounded-xl transition-all duration-200 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm;
+    }
+
+    /* MAIN CATEGORY BUTTON STYLES */
+    .main-category-btn {
+        @apply relative bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border-2 border-gray-200 dark:border-gray-600 rounded-2xl transition-all duration-300 ease-out cursor-pointer hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transform hover:scale-105 active:scale-95;
+    }
+
+    .main-category-btn.selected {
+        @apply bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border-blue-400 dark:border-blue-500 shadow-lg shadow-blue-500/20 scale-105;
+    }
+
+    .main-category-btn.selected::before {
+        content: "";
+        @apply absolute top-2 right-2 w-6 h-6 bg-contain bg-no-repeat bg-center;
+        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='rgb(59 130 246)' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z'/%3e%3c/svg%3e");
+    }
+
+    /* GRADE CARD STYLES */
+    .grade-card {
+        @apply border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 cursor-pointer bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600;
+    }
+
+    .grade-card:hover {
+        @apply transform scale-105;
+    }
+
+    /* UNIVERSITY SELECTION STYLES */
+    .university-option-item,
+    .college-option-item,
+    .course-option-item {
+        @apply block transition-all duration-200;
+    }
+
+    .university-option-item:hover,
+    .college-option-item:hover,
+    .course-option-item:hover {
+        @apply bg-blue-50 dark:bg-blue-900/20;
+    }
+
+    /* SUBJECT MODAL STYLES */
+    .subject-option-item {
+        @apply block transition-all duration-200;
+    }
+
+    .subject-option-item:hover {
+        @apply bg-blue-50 dark:bg-blue-900/20;
+    }
+
+    /* CATEGORY STYLES - Legacy Support */
+    .category-card {
+        @apply border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 cursor-pointer bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600;
+    }
+
+    .category-card.selected {
+        @apply bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800;
+    }
+
+    /* CHECKBOX STYLES with GROUP SUPPORT */
+    .schedule-checkbox-item {
+        @apply transition-all duration-200;
+    }
+
+    .schedule-checkbox-item input:checked ~ div {
+        @apply border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 shadow-md;
+    }
+
+    .schedule-checkbox-item input:checked ~ div .checkbox-icon {
+        @apply bg-blue-500 border-blue-500;
+    }
+
+    .schedule-checkbox-item input:checked ~ div .checkbox-icon svg {
+        @apply opacity-100;
+    }
+
+    .schedule-checkbox-item input:checked ~ div span {
+        @apply text-blue-600 dark:text-blue-400 font-semibold;
+    }
+
+    /* FILE UPLOAD STYLES */
+    .file-upload-container {
+        @apply space-y-3;
+    }
+
+    .file-upload-wrapper {
+        @apply relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 cursor-pointer bg-gray-50/50 dark:bg-gray-700/30 hover:bg-blue-50/50 dark:hover:bg-blue-900/10;
+    }
+
+    .file-upload-input {
+        @apply absolute inset-0 w-full h-full opacity-0 cursor-pointer;
+    }
+
+    .file-upload-display {
+        @apply flex flex-col items-center justify-center text-center space-y-2;
+    }
+
+    .file-upload-wrapper:hover .file-upload-display svg {
+        @apply text-blue-500 transform scale-110;
+    }
+
+    .file-upload-wrapper:hover .file-upload-display p {
+        @apply text-blue-600 dark:text-blue-400;
+    }
+
+    .profile-image-upload .file-upload-wrapper {
+        @apply max-w-xs mx-auto h-32;
+    }
+
+    .profile-image-upload .file-upload-display svg {
+        @apply w-12 h-12;
+    }
+
+    /* STATUS INDICATORS */
+    .verification-status {
+        @apply flex items-center text-sm font-medium;
+    }
+
+    .verification-status.verified {
+        @apply text-green-600 dark:text-green-400;
+    }
+
+    .verification-status.unverified {
+        @apply text-orange-600 dark:text-orange-400;
+    }
+
+    /* CHARACTER COUNTER */
+    .character-counter {
+        @apply text-sm text-gray-500 dark:text-gray-400 mt-1 text-right;
+    }
+
+    .character-counter.sufficient {
+        @apply text-green-600 dark:text-green-400;
+    }
+
+    .character-counter.insufficient {
+        @apply text-red-500 dark:text-red-400;
+    }
+
+    /* MESSAGE STYLES */
+    .success-message {
+        @apply p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-xl shadow-sm;
+    }
+
+    .error-message {
+        @apply p-4 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 border border-red-200 dark:border-red-800 rounded-xl shadow-sm;
+    }
+
+    .success-icon,
+    .error-icon {
+        @apply w-5 h-5 mr-2 flex-shrink-0;
+    }
+
+    .success-text {
+        @apply text-green-700 dark:text-green-300 font-medium;
+    }
+
+    .error-text {
+        @apply text-red-700 dark:text-red-300 font-medium;
+    }
+
+    /* RESPONSIVE SCROLLBARS */
+    .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: rgb(156 163 175) transparent;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background-color: rgb(156 163 175);
+        border-radius: 3px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+        background-color: rgb(107 114 128);
+    }
+
+    /* MOBILE OPTIMIZATIONS */
+    @media (max-width: 768px) {
+        .main-category-btn {
+            @apply p-4;
+        }
+
+        .main-category-btn .text-3xl {
+            @apply text-2xl;
+        }
+
+        .grade-card {
+            @apply p-3;
+        }
+
+        .file-upload-wrapper {
+            @apply p-4;
+        }
+
+        .file-upload-display svg {
+            @apply w-6 h-6;
+        }
+    }
+
+    /* Enhanced Category Selection Styles */
+    .main-level-button {
+        @apply relative overflow-hidden cursor-pointer transition-all duration-300;
+    }
+
+    .main-level-button.selected {
+        @apply transform scale-105 shadow-xl;
+    }
+
+    .grade-card {
+        @apply relative overflow-hidden cursor-pointer transition-all duration-300;
+    }
+
+    .grade-card:hover {
+        @apply transform scale-102 shadow-lg;
+    }
+
+    /* Custom scrollbar for modal content */
+    .modal-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+    }
+
+    .modal-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .modal-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .modal-scroll::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.5);
+        border-radius: 3px;
+    }
+
+    .modal-scroll::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(156, 163, 175, 0.7);
+    }
+
+    /* Selection summary styles */
+    .selection-summary {
+        @apply sticky top-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-lg;
+    }
+
+    /* Responsive grid adjustments */
+    @media (max-width: 640px) {
+        .grade-card {
+            @apply p-3;
+        }
+
+        .main-level-button > div {
+            @apply p-4;
+        }
+
+        .main-level-button h5 {
+            @apply text-base;
+        }
+    }
+
+    /* Animation for modal */
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .modal-content {
+        animation: modalSlideIn 0.2s ease-out;
+    }
+
+    /* Selection indicators */
+    .selection-indicator {
+        @apply absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-gray-800;
+    }
+
+    /* Search input focus styles */
+    .search-input:focus {
+        @apply ring-2 ring-blue-500/20 border-blue-500;
+    }
+
+    /* University/College/Course selection containers */
+    .university-selection-container {
+        @apply bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-purple-200 dark:border-purple-800;
+    }
+
+    .selection-dropdown {
+        @apply max-h-60 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 shadow-lg;
+    }
+
+    .selection-dropdown-item {
+        @apply flex items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors duration-150;
+    }
+
+    .selection-dropdown-item:hover {
+        @apply bg-blue-50 dark:bg-blue-900/20;
+    }
+
+    .selection-dropdown-item.selected {
+        @apply bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800;
+    }
+
+    /* Checkbox styles for selections */
+    .selection-checkbox {
+        @apply w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600;
+    }
+
+    /* Enhanced button styles */
+    .btn-selection {
+        @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    }
+
+    .btn-selection-blue {
+        @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+    }
+
+    .btn-selection-purple {
+        @apply bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500;
+    }
+
+    .btn-selection-outline {
+        @apply bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700;
+    }
+
+    /* Loading states */
+    .loading-spinner {
+        @apply inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+        .university-selection-container {
+            @apply p-4;
+        }
+
+        .selection-dropdown {
+            @apply max-h-48;
+        }
+
+        .modal-content {
+            @apply max-h-[90vh] m-2;
+        }
+
+        .grade-card {
+            @apply text-xs;
+        }
+
+        .main-level-button h5 {
+            @apply text-sm;
+        }
+
+        .main-level-button p {
+            @apply text-xs;
+        }
+    }
+
+    /* Accessibility improvements */
+    .selection-focus:focus-visible {
+        @apply outline-none ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-800;
+    }
+
+    /* Selection count badges */
+    .selection-count-badge {
+        @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300;
+    }
+
+    .selection-count-badge-green {
+        @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300;
+    }
+
+    .selection-count-badge-purple {
+        @apply bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300;
+    }
+
+    /* Enhanced modal backdrop */
+    .modal-backdrop {
+        @apply fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+    }
+
+    /* Selection summary card */
+    .selection-summary-card {
+        @apply bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800/50 dark:to-blue-900/20 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm;
+    }
+
+    .selection-summary-item {
+        @apply text-sm text-gray-600 dark:text-gray-400 bg-white/60 dark:bg-gray-700/50 rounded-lg p-2 border border-gray-100 dark:border-gray-600;
+    }
+
+    /* Animated transitions */
+    .selection-transition {
+        @apply transition-all duration-300 ease-in-out;
+    }
+
+    /* Scale animation for selections */
+    .scale-on-select {
+        @apply transform transition-transform duration-200 ease-out;
+    }
+
+    .scale-on-select:hover {
+        @apply scale-102;
+    }
+
+    .scale-on-select.selected {
+        @apply scale-105;
+    }
+
+    /* Gradient backgrounds for different sections */
+    .traditional-education-bg {
+        @apply bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10;
+    }
+
+    .university-education-bg {
+        @apply bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10;
+    }
+
+    /* Custom scrollbars for selection dropdowns */
+    .selection-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
+    }
+
+    .selection-scroll::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .selection-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .selection-scroll::-webkit-scrollbar-thumb {
+        background-color: rgba(59, 130, 246, 0.3);
+        border-radius: 2px;
+    }
+
+    .selection-scroll::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(59, 130, 246, 0.5);
+    }
+    /* Enhanced pill styles */
+    .pill-container {
+        @apply flex flex-wrap gap-2 mb-4;
+    }
+
+    .pill-item {
+        @apply inline-flex items-center px-3 py-2 rounded-full text-sm font-medium transition-all duration-200;
+    }
+
+    .pill-item-university {
+        @apply bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300;
+    }
+
+    .pill-item-college {
+        @apply bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300;
+    }
+
+    .pill-item-course {
+        @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300;
+    }
+
+    .pill-item-level {
+        @apply bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300;
+    }
+
+    .pill-remove-btn {
+        @apply ml-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-full p-1 transition-colors duration-200;
+    }
+
+    /* Drill-down specific styles */
+    .drill-down-container {
+        @apply bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 border border-blue-200 dark:border-blue-800;
+    }
+
+    .drill-down-header {
+        @apply flex items-center justify-between mb-4;
+    }
+
+    .drill-down-controls {
+        @apply flex space-x-2;
+    }
+
+    /* Selection dropdown improvements */
+    .selection-dropdown-improved {
+        @apply max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 shadow-lg;
+    }
+
+    .selection-dropdown-item-improved {
+        @apply w-full text-left p-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors duration-150;
+    }
+
+    /* Modal enhancements */
+    .modal-content-enhanced {
+        @apply bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col;
+        animation: modalSlideIn 0.2s ease-out;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+        .pill-item {
+            @apply text-xs px-2 py-1;
+        }
+
+        .drill-down-header {
+            @apply flex-col space-y-3;
+        }
+
+        .drill-down-controls {
+            @apply w-full justify-end;
+        }
+    }
+
+    /* Leaflet Map Styles */
+    .leaflet-control-locate {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    .leaflet-control-locate a {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #333;
+        background: white;
+        border-radius: 4px;
+    }
+
+    .leaflet-control-locate a:hover {
+        background: #f4f4f4;
+    }
+
+    /* Dark mode support for map */
+    .dark .leaflet-control-locate a {
+        background: #374151;
+        color: #f3f4f6;
+    }
+
+    .dark .leaflet-control-locate a:hover {
+        background: #4b5563;
+    }
+
+    /* File upload improvements for multiple files */
+    .file-list-item {
+        @apply flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 transition-all duration-200;
+    }
+
+    .file-list-item:hover {
+        @apply bg-gray-100 dark:bg-gray-600;
+    }
+
+    .file-info {
+        @apply flex items-center flex-1;
+    }
+
+    .file-icon {
+        @apply w-5 h-5 mr-3 flex-shrink-0;
+    }
+
+    .file-name {
+        @apply text-sm font-medium text-gray-700 dark:text-gray-300;
+    }
+
+    .file-size {
+        @apply text-xs text-gray-500 dark:text-gray-400 ml-2;
+    }
+
+    .file-remove-btn {
+        @apply text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200;
+    }
+
+    /* Map container responsive */
+    @media (max-width: 640px) {
+        #location-map {
+            height: 200px;
+        }
+    }
+
+    /* Loading state for file uploads */
+    .file-uploading {
+        @apply opacity-50 pointer-events-none;
+    }
+
+    .file-upload-progress {
+        @apply absolute inset-0 bg-blue-500/20 rounded-lg flex items-center justify-center;
+    }
+
+    /* Filter Pills */
+    .filter-pill {
+        @apply inline-flex items-center px-2 py-2 rounded-lg text-sm font-medium transition-all duration-200 border cursor-pointer;
+        white-space: nowrap;
+        min-width: fit-content;
+    }
+
+    .filter-pill-active {
+        @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-500 shadow-lg;
+    }
+
+    .filter-pill-inactive {
+        @apply bg-white/70 dark:bg-gray-800/70 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-400;
+    }
+
+    .filter-slider {
+        @apply flex gap-2 overflow-x-auto pb-2;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .filter-slider::-webkit-scrollbar {
+        display: none;
+    }
+    /* ==========================================================================
+   INTERNATIONAL TELEPHONE INPUT - Matching form-control style
+   ========================================================================== */
+
+    /* Wrapper container */
+    .iti {
+        @apply relative inline-block w-full;
+    }
+
+    /* Main telephone input - matches your form-control exactly */
+    .iti input[type="tel"],
+    .iti input.form-control {
+        @apply w-full px-4 py-3 border border-gray-300 dark:border-gray-600 
+           rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+           dark:bg-gray-700 dark:text-white transition-all duration-200 
+           placeholder:text-gray-400 dark:placeholder:text-gray-500 
+           bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm;
+    }
+
+    /* Focus state matching form-control */
+    .iti input[type="tel"]:focus,
+    .iti input.form-control:focus {
+        @apply outline-none border-blue-500 ring-2 ring-blue-500/20 shadow-md;
+    }
+
+    /* Adjust padding for dial code */
+    .iti--separate-dial-code input[type="tel"],
+    .iti--separate-dial-code input.form-control {
+        @apply ps-24;
+    }
+
+    /* Flag and dial code container */
+    .iti .iti__flag-container {
+        @apply absolute inset-y-0 start-0 flex items-center ps-4;
+    }
+
+    /* Selected flag button */
+    .iti--separate-dial-code .iti__selected-flag {
+        @apply relative flex items-center bg-transparent border-none outline-none 
+           cursor-pointer rounded-s-lg transition-all duration-200 py-2 px-2
+           hover:bg-gray-100 dark:hover:bg-gray-700/50;
+    }
+
+    /* Focus state for flag button */
+    .iti .iti__selected-flag:focus-visible {
+        @apply outline-none ring-2 ring-blue-500 dark:ring-blue-400 
+           ring-offset-2 dark:ring-offset-gray-900 rounded-md;
+    }
+
+    /* Dial code text */
+    .iti--separate-dial-code .iti__selected-dial-code {
+        @apply ms-1.5 text-sm font-medium text-gray-700 dark:text-gray-300;
+    }
+
+    /* Arrow icon */
+    .iti .iti__arrow {
+        @apply ms-1 border-gray-500 dark:border-gray-400;
+        border-width: 4px 4px 0 4px;
+    }
+
+    .iti .iti__arrow--up {
+        border-width: 0 4px 4px 4px;
+    }
+
+    /* Country dropdown - matches your modal/dropdown style */
+    .iti__country-list {
+        @apply absolute mt-2 w-full min-w-[280px] max-w-sm
+           bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl
+           border border-gray-300 dark:border-gray-600
+           rounded-xl shadow-xl max-h-60 overflow-y-auto overflow-x-hidden !z-20;
+    }
+
+    /* Search box in dropdown */
+    .iti__search-input {
+        @apply w-full px-4 py-3 mb-2 text-sm font-medium
+           bg-white/80 dark:bg-gray-800/80 
+           border-b border-gray-200 dark:border-gray-600
+           placeholder:text-gray-400 dark:placeholder:text-gray-500
+           focus:outline-none focus:bg-white dark:focus:bg-gray-700
+           transition-all duration-200;
+    }
+
+    /* Country list items */
+    .iti__country {
+        @apply flex items-center px-4 py-3 text-sm font-medium
+           text-gray-700 dark:text-gray-300
+           cursor-pointer transition-all duration-200
+           hover:bg-blue-50 dark:hover:bg-blue-900/20;
+    }
+
+    /* Highlighted/selected country */
+    .iti__country.iti__highlight {
+        @apply bg-blue-50 dark:bg-blue-900/20
+           text-blue-600 dark:text-blue-400;
+    }
+
+    /* Active country */
+    .iti__country.iti__active {
+        @apply bg-gray-100 dark:bg-gray-700/50;
+    }
+
+    /* Country name and dial code */
+    .iti__country-name {
+        @apply flex-1 font-normal;
+    }
+
+    .iti__dial-code {
+        @apply ms-2 text-gray-500 dark:text-gray-400 text-sm;
+    }
+
+    /* Flag styling */
+    .iti__flag {
+        @apply me-2 shadow-sm rounded-sm;
+    }
+
+    /* Divider for preferred countries */
+    .iti__divider {
+        @apply border-b border-gray-200 dark:border-gray-700 my-1;
+    }
+
+    /* Disabled state - matching form-control */
+    .iti input[type="tel"]:disabled,
+    .iti input.form-control:disabled {
+        @apply bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400
+           cursor-not-allowed opacity-75;
+    }
+
+    /* Invalid/Error state - matching form-control */
+    .iti input[type="tel"]:invalid,
+    .iti input.form-control:invalid,
+    .iti input[type="tel"].error,
+    .iti input.form-control.error {
+        @apply border-red-500 dark:border-red-400
+           focus:ring-red-500 dark:focus:ring-red-400;
+    }
+
+    /* Mobile fullscreen dropdown */
+    @media (max-width: 500px) {
+        .iti--container {
+            @apply fixed inset-0 z-[100];
+        }
+
+        .iti--container .iti__country-list {
+            @apply fixed inset-x-0 bottom-0 top-auto
+               max-w-full w-full max-h-[80vh]
+               rounded-t-2xl rounded-b-none
+               border-t-2 border-x-0 border-b-0;
+        }
+
+        /* Drag handle for mobile */
+        .iti--container .iti__country-list::before {
+            content: "";
+            @apply block w-12 h-1 bg-gray-300 dark:bg-gray-600
+               rounded-full mx-auto my-3;
+        }
+    }
+
+    /* RTL support */
+    [dir="rtl"] .iti .iti__flag-container {
+        @apply start-auto end-0 pe-4 ps-0;
+    }
+
+    [dir="rtl"] .iti input[type="tel"],
+    [dir="rtl"] .iti input.form-control {
+        @apply ps-4 pe-24;
+    }
+
+    [dir="rtl"] .iti--separate-dial-code .iti__selected-flag {
+        @apply rounded-s-none rounded-e-lg;
+    }
+
+    /* Dropdown animation */
+    .iti__country-list {
+        animation: iti-dropdown-fade-in 0.2s ease-out;
+    }
+    .iti-mobile .iti__country-list {
+        width: 60% !important;
+    }
+
+    @keyframes iti-dropdown-fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Custom scrollbar for country list - matching your style */
+    .iti__country-list::-webkit-scrollbar {
+        @apply w-2;
+    }
+
+    .iti__country-list::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    .iti__country-list::-webkit-scrollbar-thumb {
+        @apply bg-gray-400 dark:bg-gray-500 rounded-full;
+    }
+
+    .iti__country-list::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-500 dark:bg-gray-400;
+    }
+
+    /* Safari/iOS specific fixes for iti */
+    @supports (-webkit-touch-callout: none) {
+        .iti input[type="tel"],
+        .iti input.form-control {
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+        }
+
+        @media (max-width: 768px) {
+            .iti input[type="tel"],
+            .iti input.form-control {
+                font-size: 16px !important; /* Prevent zoom */
+            }
+        }
+
+        .iti__country-list {
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+    .iti--separate-dial-code .iti__selected-flag {
+        background-color: transparent !important;
+    }
+
+    /* ========================================================
+            Z-index
+   =============================================================*/
+    .z-background {
+        z-index: -10;
+    }
+    .z-content {
+        z-index: 10;
+    }
+    .z-filters {
+        z-index: 30;
+    }
+    .z-header {
+        z-index: 40;
+    }
+    .z-header-menus {
+        z-index: 50;
+    }
+}
+
+/* ==========================================================================
+   UTILITY STYLES - الأنماط المساعدة
+========================================================================== */
+@layer utilities {
+    /* Animation delays for blobs */
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+
+    .animate-blob-delay-1000 {
+        animation: blob 7s infinite;
+        animation-delay: 2s;
+    }
+
+    .animate-blob-delay-500 {
+        animation: blob 7s infinite;
+        animation-delay: 4s;
+    }
+
+    /* Responsive utilities for admin layout */
+    .admin-responsive-ml-64 {
+        @apply ml-0 lg:ml-64;
+    }
+
+    .admin-responsive-ml-16 {
+        @apply ml-0 lg:ml-16;
+    }
+
+    /* Custom animations */
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.6s ease-out;
+    }
+
+    .animate-slide-down {
+        animation: slideDown 0.4s ease-out;
+    }
+
+    .animate-pulse-slow {
+        animation: pulse 3s ease-in-out infinite;
+    }
+
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+    .delay-300 {
+        animation-delay: 0.3s;
+    }
+    .delay-500 {
+        animation-delay: 0.5s;
+    }
+    .delay-700 {
+        animation-delay: 0.7s;
+    }
+    .delay-1000 {
+        animation-delay: 1s;
+    }
+
+    .skeleton {
+        background: linear-gradient(
+            90deg,
+            #f0f0f0 25%,
+            #e0e0e0 50%,
+            #f0f0f0 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+
+    .dark .skeleton {
+        background: linear-gradient(
+            90deg,
+            #374151 25%,
+            #4b5563 50%,
+            #374151 75%
+        );
+        background-size: 200% 100%;
+    }
+
+    /* Glass morphism utilities */
+    .glass-light {
+        @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-lg;
+    }
+
+    .glass-medium {
+        @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-xl;
+    }
+
+    .glass-heavy {
+        @apply bg-white/20 backdrop-blur-2xl border border-white/30 shadow-2xl;
+    }
+
+    /* Interactive states */
+    .interactive {
+        @apply transition-all duration-300 ease-out cursor-pointer transform hover:scale-105 active:scale-95;
+    }
+
+    .interactive-subtle {
+        @apply transition-all duration-200 ease-out cursor-pointer transform hover:scale-102 active:scale-98;
+    }
+
+    /* Consistent focus styles across all form elements */
+    .form-focus {
+        @apply focus:outline-none focus:ring-2 focus:ring-blue-500 
+               dark:focus:ring-blue-400 focus:border-transparent;
+    }
+
+    /* Consistent input styling */
+    .form-input {
+        @apply w-full px-4 py-2.5
+               text-gray-900 dark:text-gray-100
+               bg-white dark:bg-gray-900
+               border border-gray-300 dark:border-gray-700
+               rounded-lg
+               placeholder:text-gray-500 dark:placeholder:text-gray-400
+               transition-colors duration-200;
+    }
+}
+
+/* ==========================================================================
+   KEYFRAMES - الإطارات الرئيسية للحركة
+   ========================================================================== */
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes blob {
+    0%,
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes blob {
+    0%,
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+}
+
+@keyframes admin-blob {
+    0%,
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Smooth scrolling for category selections */
+@keyframes smoothScroll {
+    from {
+        scroll-behavior: smooth;
+    }
+    to {
+        scroll-behavior: auto;
+    }
+}
+
+/* Modal entrance animation */
+@keyframes modalEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-enter {
+    animation: modalEnter 0.3s ease-out;
+}
+
+/* ==========================================================================
+   SAFARI & iOS FIXES - Add this at the END of your app.css file
+   ========================================================================== */
+
+/* Safari Backdrop Filter Support */
+@supports (-webkit-backdrop-filter: none) {
+    .glass,
+    .teacher-card,
+    .filter-box,
+    .form-input,
+    .form-control,
+    .loading-overlay,
+    .selection-summary,
+    .glass-light,
+    .glass-medium,
+    .glass-heavy {
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .teacher-card {
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .filter-box {
+        -webkit-backdrop-filter: blur(12px);
+    }
+}
+
+/* iOS-Specific Fixes */
+@supports (-webkit-touch-callout: none) {
+    /* Fix viewport height */
+    body {
+        min-height: -webkit-fill-available;
+    }
+
+    /* Smooth scrolling */
+    .filter-slider,
+    .modal-scroll,
+    .selection-dropdown,
+    .selection-scroll,
+    .iti__country-list,
+    .scrollbar-thin {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Remove tap highlight */
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    /* Fix all form elements */
+    input.form-control,
+    select.form-control,
+    textarea.form-control {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    /* Select-specific fixes */
+    select.form-control {
+        cursor: pointer;
+    }
+
+    select.form-control::-ms-expand {
+        display: none;
+    }
+
+    /* Prevent input zoom on mobile */
+    @media (max-width: 768px) {
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        input[type="number"],
+        input[type="search"],
+        textarea,
+        select,
+        .form-input,
+        .form-control {
+            font-size: 16px !important;
+        }
+    }
+}
+
+/* Font Rendering Improvements */
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hardware Acceleration for Animations */
+.teacher-card,
+.teacher-avatar,
+.teacher-avatar-fallback,
+.interactive,
+.interactive-subtle,
+.main-category-btn,
+.filter-button,
+.btn,
+.grade-card,
+.scale-on-select,
+.animate-float,
+.animate-blob {
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* Fix transform animations */
+.teacher-card:hover {
+    -webkit-transform: translateY(-8px) rotate(1deg) translateZ(0);
+}
+
+.teacher-card:hover .teacher-avatar,
+.teacher-card:hover .teacher-avatar-fallback {
+    -webkit-transform: scale(1.1);
+}
+
+/* iPhone X+ Safe Areas */
+@supports (padding: max(0px)) {
+    .container-custom {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+
+    @media (max-width: 768px) {
+        .modal-backdrop {
+            padding: env(safe-area-inset-top) env(safe-area-inset-right)
+                env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+    }
+}
+
+/* Fix Modal Heights for iOS */
+@supports (-webkit-touch-callout: none) {
+    .modal-content,
+    .modal-content-enhanced {
+        max-height: 80vh;
+        max-height: 80dvh;
+    }
+
+    @media (max-width: 768px) {
+        .modal-content,
+        .modal-content-enhanced {
+            max-height: 85vh;
+            max-height: 85dvh;
+            margin: env(safe-area-inset-top) 0.5rem;
+        }
+    }
+}
+
+/* Prevent body scroll when modal open - iOS fix */
+body.modal-open {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+    -webkit-overflow-scrolling: auto;
+}
+
+/* Fix for International Tel Input on iOS */
+@supports (-webkit-touch-callout: none) {
+    .iti input[type="tel"],
+    .iti input.form-control {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    @media (max-width: 768px) {
+        .iti input[type="tel"],
+        .iti input.form-control {
+            font-size: 16px !important;
+        }
+    }
+}
+
+/* Animation Performance */
+@media (prefers-reduced-motion: no-preference) {
+    .animate-float,
+    .animate-blob,
+    .animate-fade-in,
+    .animate-slide-up,
+    .animate-slide-down {
+        will-change: transform, opacity;
+    }
+}
+
+/* Gradient Performance Fix for iOS */
+@media (max-width: 768px) and (-webkit-touch-callout: none) {
+    body {
+        background-attachment: scroll !important;
+    }
+}
+
+/* Fix buttons and clickable elements */
+button,
+.btn,
+.filter-button,
+.main-category-btn,
+.grade-card,
+[role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+}
+
+/* Scrollbar hiding for iOS (they don't show anyway) */
+@supports (-webkit-touch-callout: none) {
+    .filter-slider::-webkit-scrollbar,
+    .selection-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .filter-slider,
+    .selection-scroll {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+}
+
+/* End of Safari & iOS Fixes */
