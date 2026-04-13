@@ -6,7 +6,7 @@
     x-effect="document.body.classList.toggle('overflow-hidden', showMobileFilters || showFilterDialog)">
 
     <!-- Mobile Filter Modal -->
-    <div x-show="showMobileFilters" class="fixed inset-0 z-50 md:hidden"
+    <div x-cloak x-show="showMobileFilters" class="fixed inset-0 z-50 md:hidden"
         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
@@ -170,7 +170,7 @@
     </div>
 
     <!-- Desktop Filter Dialog -->
-    <div x-show="showFilterDialog" x-on:open-filter-dialog.window="showFilterDialog = true; tempSortBy = $wire.sortBy"
+    <div x-cloak x-show="showFilterDialog" x-on:open-filter-dialog.window="showFilterDialog = true; tempSortBy = $wire.sortBy"
         class="fixed inset-0 z-50 overflow-hidden hidden md:block" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
