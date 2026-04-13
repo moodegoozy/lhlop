@@ -25,4 +25,14 @@ class Category extends Model
     {
         return $this->belongsToMany(Teacher::class);
     }
+
+    public function scopeActive($query)
+    {
+        return $query;
+    }
+
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('sort_order');
+    }
 }
