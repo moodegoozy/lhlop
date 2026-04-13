@@ -5,10 +5,10 @@ Saudi teacher booking platform built with Laravel 8 + Livewire 2 + Alpine.js + T
 ## Architecture
 
 - **Livewire-first**: No custom controllers. All page logic lives in Livewire components (`app/Http/Livewire/`). Routes use closures or return views that mount Livewire components.
-- **Three role-based layouts**: `app` (public), `admin` (admin panel), `teacher` (teacher dashboard), `minimal` (auth pages).
+- **Four role-based layouts**: `app` (public), `admin` (admin panel), `teacher` (teacher dashboard), `minimal` (auth pages).
 - **Dual file locations**: Source views are in `/resources/views/` (primary — edit here). `/laravel-app/resources/views/` mirrors them for deployment. Keep both in sync.
 - **Entry point**: `public_html/index.php` → bootstraps `../laravel-app/`.
-- **Database**: MySQL 8.0 via Docker/Sail. Backend is early-stage — only default Laravel migrations exist. Models for Teacher, Booking, Category, etc. still need to be created.
+- **Database**: MySQL 8.0 via Docker/Sail. Core models exist (`Teacher`, `Category`, `User`) with migrations. Booking model and related features still need implementation.
 
 ## Code Style
 
@@ -47,6 +47,6 @@ See [DEPLOYMENT.md](../DEPLOYMENT.md) for Hostinger deployment steps.
 ## Pitfalls
 
 - **XSS risk**: `emails/dynamic.blade.php` renders `{!! $html_content !!}` unescaped. Sanitize HTML in the backend before passing to this template.
-- **Empty backend**: `HomePage.php` returns an empty paginator with hardcoded filter data. Real database queries, models, and migrations need to be built.
+- **Stub data in HomePage**: `HomePage.php` returns hardcoded filter options. Real database queries should replace the placeholder data.
 - **File duplication**: `/resources/` and `/laravel-app/resources/` can drift out of sync. Always verify both locations after view changes.
 - **`DO_NOT_UPLOAD_HERE/`**: This folder exists as a deployment guard — do not place files in it.

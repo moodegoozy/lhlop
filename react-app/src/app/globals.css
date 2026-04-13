@@ -1,0 +1,180 @@
+/* Google Fonts - Must be at the top */
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+@import "tailwindcss";
+
+/* Custom dark mode variant */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   BASE STYLES
+   ========================================================================== */
+@layer base {
+  html {
+    font-family: "Cairo", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: linear-gradient(
+      135deg,
+      rgb(248 250 252) 0%,
+      rgb(241 245 249) 25%,
+      rgb(236 254 255) 50%,
+      rgb(240 253 250) 75%,
+      rgb(249 250 251) 100%
+    );
+    color: rgb(15 23 42);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .dark body {
+    background: linear-gradient(
+      135deg,
+      rgb(2 6 23) 0%,
+      rgb(15 23 42) 25%,
+      rgb(30 41 59) 50%,
+      rgb(15 23 42) 75%,
+      rgb(2 6 23) 100%
+    );
+    color: rgb(248 250 252);
+  }
+
+  /* FOUC Prevention */
+  [x-cloak] {
+    display: none !important;
+  }
+
+  /* Saudi Riyal Symbol Font */
+  @font-face {
+    font-family: "SaudiRiyalSymbol";
+    src: url("/fonts/saudiriyalsymbol.woff2") format("woff2"),
+         url("/fonts/saudiriyalsymbol.woff") format("woff");
+    font-display: swap;
+  }
+}
+
+/* ==========================================================================
+   COMPONENT STYLES
+   ========================================================================== */
+@layer components {
+  .container-custom {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Header */
+  .header-gradient {
+    @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 shadow-lg;
+  }
+
+  /* Hero Background */
+  .hero-bg {
+    background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  }
+
+  /* Teacher Card */
+  .teacher-card {
+    @apply relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-gray-700/30 shadow-xl hover:shadow-2xl transition-all duration-500 ease-out overflow-hidden;
+  }
+
+  .teacher-card:hover {
+    @apply transform -translate-y-2;
+  }
+
+  .teacher-avatar {
+    @apply w-full h-48 object-cover transition-transform duration-700 ease-out;
+  }
+
+  .teacher-card:hover .teacher-avatar {
+    @apply scale-110;
+  }
+
+  .teacher-avatar-fallback {
+    @apply w-full h-48 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl font-bold transition-transform duration-700;
+  }
+
+  .teacher-card:hover .teacher-avatar-fallback {
+    @apply scale-110;
+  }
+
+  /* Form Input */
+  .form-input {
+    @apply w-full px-4 py-3 text-sm lg:text-base font-medium bg-white/80 dark:bg-gray-800/80 border-2 border-gray-200/60 dark:border-gray-600/60 rounded-xl transition-all duration-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 dark:focus:border-blue-400 dark:focus:ring-blue-400/20 placeholder:text-gray-400 dark:placeholder:text-gray-500 backdrop-blur-sm;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  select.form-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: left 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-left: 2.5rem;
+    padding-right: 1rem;
+    cursor: pointer;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-success {
+    @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300;
+  }
+
+  .badge-info {
+    @apply bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300;
+  }
+
+  /* Filter Buttons */
+  .filter-slider {
+    @apply flex flex-nowrap gap-3 overflow-x-auto overflow-y-hidden pb-2;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  .filter-slider::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .filter-slider::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 2px;
+  }
+
+  .filter-button {
+    @apply relative px-4 py-2 rounded-xl font-semibold text-sm transition-all duration-300 ease-out transform hover:scale-105 active:scale-95 cursor-pointer select-none whitespace-nowrap;
+  }
+
+  .filter-button-inactive {
+    @apply bg-white/60 dark:bg-gray-700/60 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 shadow-md hover:shadow-lg border border-gray-200/50 dark:border-gray-600/50;
+  }
+
+  .filter-button-blue {
+    @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 hover:from-blue-600 hover:to-blue-700;
+  }
+
+  /* Riyal Symbol */
+  .riyal-symbol {
+    font-family: "SaudiRiyalSymbol", sans-serif;
+    font-size: inherit;
+    color: inherit;
+    font-weight: bold;
+  }
+
+  /* Glass Effect */
+  .glass {
+    @apply bg-white/10 dark:bg-gray-900/20 backdrop-blur-2xl border border-white/20 dark:border-gray-700/30 shadow-2xl;
+  }
+
+  /* Spinner */
+  .spinner {
+    @apply w-8 h-8 border-4 border-blue-600/30 border-t-blue-600 rounded-full animate-spin;
+  }
+}
