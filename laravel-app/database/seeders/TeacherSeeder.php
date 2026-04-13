@@ -10,29 +10,56 @@ class TeacherSeeder extends Seeder
 {
     public function run()
     {
-        // Create root categories
-        $categories = [
-            ['name' => 'الرياضيات', 'icon' => '📐', 'sort_order' => 1],
-            ['name' => 'اللغة العربية', 'icon' => '📚', 'sort_order' => 2],
-            ['name' => 'اللغة الإنجليزية', 'icon' => '🔤', 'sort_order' => 3],
-            ['name' => 'الفيزياء', 'icon' => '⚛️', 'sort_order' => 4],
-            ['name' => 'الكيمياء', 'icon' => '🧪', 'sort_order' => 5],
-            ['name' => 'البرمجة', 'icon' => '💻', 'sort_order' => 6],
+        // Clear existing data
+        \DB::table('category_teacher')->truncate();
+        Teacher::truncate();
+        Category::truncate();
+
+        // Root categories matching lhloop.com
+        $roots = [
+            ['name' => 'ابتدائي', 'icon' => '🎒', 'sort_order' => 1],
+            ['name' => 'متوسط', 'icon' => '📚', 'sort_order' => 2],
+            ['name' => 'ثانوي', 'icon' => '🎓', 'sort_order' => 3],
+            ['name' => 'جامعي', 'icon' => '🏛️', 'sort_order' => 4],
         ];
 
         $catModels = [];
-        foreach ($categories as $cat) {
+        foreach ($roots as $cat) {
             $catModels[] = Category::create($cat);
         }
 
-        // Sub-categories
+        // Sub-categories per level
         $subs = [
-            1 => [['name' => 'جبر', 'icon' => '➕'], ['name' => 'هندسة', 'icon' => '📐'], ['name' => 'تفاضل وتكامل', 'icon' => '∫']],
-            2 => [['name' => 'نحو وصرف', 'icon' => '📝'], ['name' => 'أدب', 'icon' => '📖'], ['name' => 'بلاغة', 'icon' => '🖋']],
-            3 => [['name' => 'محادثة', 'icon' => '💬'], ['name' => 'قواعد', 'icon' => '📘'], ['name' => 'أعمال', 'icon' => '💼']],
-            4 => [['name' => 'ميكانيكا', 'icon' => '⚙️'], ['name' => 'كهرباء', 'icon' => '⚡'], ['name' => 'بصريات', 'icon' => '🔍']],
-            5 => [['name' => 'كيمياء عضوية', 'icon' => '🧬'], ['name' => 'كيمياء تحليلية', 'icon' => '🔬']],
-            6 => [['name' => 'بايثون', 'icon' => '🐍'], ['name' => 'جافا', 'icon' => '☕'], ['name' => 'تطوير ويب', 'icon' => '🌐']],
+            1 => [
+                ['name' => 'رياضيات ابتدائي', 'icon' => '📐'],
+                ['name' => 'لغتي', 'icon' => '📝'],
+                ['name' => 'علوم ابتدائي', 'icon' => '🔬'],
+                ['name' => 'إنجليزي ابتدائي', 'icon' => '🔤'],
+                ['name' => 'تربية إسلامية', 'icon' => '📖'],
+            ],
+            2 => [
+                ['name' => 'رياضيات متوسط', 'icon' => '📐'],
+                ['name' => 'لغة عربية', 'icon' => '📝'],
+                ['name' => 'علوم متوسط', 'icon' => '🔬'],
+                ['name' => 'إنجليزي متوسط', 'icon' => '🔤'],
+                ['name' => 'حاسب آلي', 'icon' => '💻'],
+            ],
+            3 => [
+                ['name' => 'رياضيات ثانوي', 'icon' => '📐'],
+                ['name' => 'فيزياء', 'icon' => '⚛️'],
+                ['name' => 'كيمياء', 'icon' => '🧪'],
+                ['name' => 'أحياء', 'icon' => '🧬'],
+                ['name' => 'إنجليزي ثانوي', 'icon' => '🔤'],
+                ['name' => 'قدرات وتحصيلي', 'icon' => '📊'],
+            ],
+            4 => [
+                ['name' => 'رياضيات جامعي', 'icon' => '📐'],
+                ['name' => 'فيزياء جامعي', 'icon' => '⚛️'],
+                ['name' => 'برمجة', 'icon' => '💻'],
+                ['name' => 'إدارة أعمال', 'icon' => '📈'],
+                ['name' => 'محاسبة', 'icon' => '🧮'],
+                ['name' => 'هندسة', 'icon' => '⚙️'],
+            ],
         ];
 
         foreach ($subs as $parentIdx => $children) {
@@ -46,49 +73,46 @@ class TeacherSeeder extends Seeder
             }
         }
 
-        // Sample teachers
-        $firstNames = [
-            'male' => ['أحمد', 'محمد', 'عبدالله', 'خالد', 'فيصل', 'سعود', 'عمر', 'يوسف', 'إبراهيم', 'سلطان', 'ناصر', 'تركي', 'بندر', 'ماجد', 'عبدالرحمن'],
-            'female' => ['نورة', 'سارة', 'فاطمة', 'مريم', 'ريم', 'هند', 'لمى', 'دانة', 'عبير', 'منال', 'هيا', 'العنود', 'مها', 'أسماء', 'جواهر'],
-        ];
+        // Teacher data
+        $maleNames = ['أحمد', 'محمد', 'عبدالله', 'خالد', 'فيصل', 'سعود', 'عمر', 'يوسف', 'إبراهيم', 'سلطان', 'ناصر', 'تركي', 'بندر', 'ماجد', 'عبدالرحمن', 'فهد', 'سالم', 'حسن', 'علي', 'طلال', 'مشاري', 'نايف', 'بدر', 'حمد', 'سعد'];
+        $femaleNames = ['نورة', 'سارة', 'فاطمة', 'مريم', 'ريم', 'هند', 'لمى', 'دانة', 'عبير', 'منال', 'هيا', 'العنود', 'مها', 'أسماء', 'جواهر', 'لطيفة', 'غادة', 'أمل', 'وفاء', 'حنان', 'رنا', 'شيماء', 'بشاير', 'نوف', 'ديمة'];
+        $lastNames = ['العتيبي', 'الشمري', 'الحربي', 'القحطاني', 'الدوسري', 'المالكي', 'السبيعي', 'الغامدي', 'الزهراني', 'المطيري', 'العنزي', 'البلوي', 'الرشيدي', 'السلمي', 'الجهني', 'الشهري', 'العمري', 'الأحمدي', 'السهلي', 'الخالدي'];
 
-        $lastNames = ['العتيبي', 'الشمري', 'الحربي', 'القحطاني', 'الدوسري', 'المالكي', 'السبيعي', 'الغامدي', 'الزهراني', 'المطيري', 'العنزي', 'البلوي', 'الرشيدي', 'السلمي', 'الجهني'];
-
-        $nationalities = ['saudi', 'saudi', 'saudi', 'egyptian', 'jordanian', 'syrian', 'saudi'];
-        $qualifications = ['bachelor', 'master', 'phd', 'diploma', 'bachelor', 'master'];
+        $nationalities = ['saudi', 'saudi', 'saudi', 'saudi', 'egyptian', 'jordanian', 'syrian', 'saudi'];
+        $qualifications = ['bachelor', 'master', 'phd', 'diploma'];
         $qualLabels = [
             'bachelor' => 'بكالوريوس',
             'master' => 'ماجستير',
             'phd' => 'دكتوراه',
-            'diploma' => 'دبلوم',
+            'diploma' => 'دبلوم تربوي',
         ];
-        $subjects = ['رياضيات', 'لغة عربية', 'لغة إنجليزية', 'فيزياء', 'كيمياء', 'برمجة'];
+        $qualSuffixes = ['', ' + دبلوم تربوي', '', ' تربوي'];
         $locations = ['online', 'in_person', 'both'];
         $methods = ['individual', 'group'];
-        $countries = ['SA', 'SA', 'SA', 'EG', 'JO', 'SA'];
+        $countries = ['SA', 'SA', 'SA', 'SA', 'EG', 'JO', 'SA'];
 
         $allCatIds = Category::whereNull('parent_id')->pluck('id')->toArray();
 
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 176; $i++) {
             $gender = $i % 3 === 0 ? 'female' : 'male';
-            $names = $firstNames[$gender];
+            $names = $gender === 'male' ? $maleNames : $femaleNames;
             $firstName = $names[array_rand($names)];
             $lastName = $lastNames[array_rand($lastNames)];
 
             $qual = $qualifications[array_rand($qualifications)];
-            $subjectIdx = $i % count($subjects);
+            $suffix = $qualSuffixes[array_rand($qualSuffixes)];
 
             $teacher = Teacher::create([
                 'name' => $firstName . ' ' . $lastName,
                 'gender' => $gender,
                 'nationality' => $nationalities[array_rand($nationalities)],
                 'qualification' => $qual,
-                'latest_qualification' => $qualLabels[$qual] . ' ' . $subjects[$subjectIdx],
-                'hourly_rate' => rand(50, 300),
+                'latest_qualification' => $qualLabels[$qual] . $suffix,
+                'hourly_rate' => rand(30, 350),
                 'rating' => round(rand(30, 50) / 10, 1),
                 'total_ratings' => rand(5, 200),
                 'completed_hours' => rand(10, 1500),
-                'experience_years' => rand(1, 20),
+                'experience_years' => rand(1, 25),
                 'lesson_location' => $locations[array_rand($locations)],
                 'teaching_method' => $methods[array_rand($methods)],
                 'country_code' => $countries[array_rand($countries)],
@@ -96,9 +120,10 @@ class TeacherSeeder extends Seeder
             ]);
 
             // Attach 1-3 categories
-            $catCount = rand(1, 3);
-            $assignedCats = (array) array_rand(array_flip($allCatIds), min($catCount, count($allCatIds)));
-            $teacher->categories()->attach($assignedCats);
+            $catCount = rand(1, min(3, count($allCatIds)));
+            $shuffled = $allCatIds;
+            shuffle($shuffled);
+            $teacher->categories()->attach(array_slice($shuffled, 0, $catCount));
         }
     }
 }
