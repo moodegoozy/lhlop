@@ -224,7 +224,7 @@ class HomePage extends Component
                 break;
         }
 
-        return $query->paginate(12);
+        return $query->paginate(20);
     }
 
     public function isInSelectedPath($categoryId)
