@@ -77,9 +77,7 @@
     </style>
 
     <!-- Main Styles -->
-    <link rel="stylesheet" href="/build/assets/app-2yfFkqO-.css">
-    <script src="/build/assets/vendor-l0sNRNKZ.js" defer></script>
-    <script src="/build/assets/app-BP5eHSZ0.js" defer></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 
     <!-- jQuery and Select2 for dynamic components -->
