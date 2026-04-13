@@ -11,9 +11,11 @@ class TeacherSeeder extends Seeder
     public function run()
     {
         // Clear existing data
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         \DB::table('category_teacher')->truncate();
         Teacher::truncate();
         Category::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // Root categories matching lhloop.com
         $roots = [
