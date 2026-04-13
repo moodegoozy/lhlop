@@ -77,7 +77,12 @@
     </style>
 
     <!-- Main Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="preload" as="style" href="/build/assets/app-2yfFkqO-.css" />
+    <link rel="preload" as="style" href="/build/assets/app-CLLlcC51.css" />
+    <link rel="modulepreload" href="/build/assets/app-BP5eHSZ0.js" />
+    <link rel="stylesheet" href="/build/assets/app-2yfFkqO-.css" />
+    <link rel="stylesheet" href="/build/assets/app-CLLlcC51.css" />
+    <script type="module" src="/build/assets/app-BP5eHSZ0.js"></script>
     @livewireStyles
 
     <!-- jQuery and Select2 for dynamic components -->
