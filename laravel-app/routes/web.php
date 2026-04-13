@@ -33,6 +33,10 @@ Route::get('/teacher/register', function () {
     return 'Teacher Registration';
 })->name('teacher.register');
 
+Route::get('/teacher/{teacher}/calendar', function (\App\Models\Teacher $teacher) {
+    return 'Teacher Calendar: ' . $teacher->name;
+})->name('teacher.calendar');
+
 Route::get('/settings/language/{locale}', function ($locale) {
     session(['locale' => $locale]);
     app()->setLocale($locale);
