@@ -1,40 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFilterStore } from '@/lib/store';
+import { mockCategories } from '@/lib/mockData';
 import type { Category } from '@/types';
 import { t } from '@/lib/translations';
-import { ChevronDown, ChevronUp, Check, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Check } from 'lucide-react';
 import clsx from 'clsx';
 
 export function CategoryPills() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
   const { filters, setFilter } = useFilterStore();
-
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const res = await fetch('/api/categories');
-        const data = await res.json();
-        setCategories(data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCategories();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center py-4">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-      </div>
-    );
-  }
+  const categories = mockCategories;
 
   const handleCategoryClick = (categoryId: number | null) => {
     if (categoryId === filters.categoryId) {

@@ -1,46 +1,49 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useFilterStore } from '@/lib/store';
 import { TeacherCard } from './TeacherCard';
 import { CategoryPills } from './CategoryPills';
 import { MobileFilterButton, MobileFilterModal } from './FilterModal';
-import type { Teacher, PaginatedResponse } from '@/types';
+import { mockTeachers, filterTeachers } from '@/lib/mockData';
+import type { Teacher } from '@/types';
 import { t } from '@/lib/translations';
 import { Loader2, Search, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function TeacherGrid() {
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
   const { filters, setFilter } = useFilterStore();
+  const perPage = 20;
 
-  const fetchTeachers = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== null && value !== '' && value !== undefined) {
-          params.set(key, String(value));
-        }
-      });
-
-      const res = await fetch(`/api/teachers?${params.toString()}`);
-      const data: PaginatedResponse<Teacher> = await res.json();
-      setTeachers(data.data);
-      setTotal(data.total);
-      setTotalPages(data.totalPages);
-    } catch (error) {
-      console.error('Error fetching teachers:', error);
-    } finally {
-      setLoading(false);
-    }
+  // Filter teachers using mock data
+  const filteredTeachers = useMemo(() => {
+    return filterTeachers(mockTeachers, {
+      search: filters.search,
+      gender: filters.gender,
+      qualification: filters.qualification,
+      lessonLocation: filters.lessonLocation,
+      nationality: filters.nationality,
+      categoryId: filters.categoryId,
+      sortBy: filters.sortBy,
+    });
   }, [filters]);
 
+  const total = filteredTeachers.length;
+  const totalPages = Math.ceil(total / perPage);
+  const currentPage = filters.page || 1;
+  
+  // Paginate
+  const paginatedTeachers = useMemo(() => {
+    const start = (currentPage - 1) * perPage;
+    return filteredTeachers.slice(start, start + perPage);
+  }, [filteredTeachers, currentPage]);
+
   useEffect(() => {
-    fetchTeachers();
-  }, [fetchTeachers]);
+    // Simulate loading
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 300);
+    return () => clearTimeout(timer);
+  }, [filters]);
 
   return (
     <div className="space-y-6">
@@ -81,7 +84,7 @@ export function TeacherGrid() {
           <Loader2 className="w-12 h-12 animate-spin text-blue-500 mb-4" />
           <p className="text-gray-600 dark:text-gray-400">{t('loading')}</p>
         </div>
-      ) : teachers.length === 0 ? (
+      ) : paginatedTeachers.length === 0 ? (
         /* Empty State */
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
@@ -98,7 +101,7 @@ export function TeacherGrid() {
         /* Teacher Cards Grid */
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {teachers.map((teacher) => (
+            {paginatedTeachers.map((teacher) => (
               <TeacherCard key={teacher.id} teacher={teacher} />
             ))}
           </div>

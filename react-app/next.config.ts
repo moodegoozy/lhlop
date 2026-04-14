@@ -1,21 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Enable standalone output for production deployment
-  output: 'standalone',
+  // Static export for Firebase Hosting
+  output: 'export',
   
-  // Image optimization settings
+  // Image optimization settings - use unoptimized for static export
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
+    unoptimized: true,
   },
 
   // Disable x-powered-by header
   poweredByHeader: false,
+  
+  // Trailing slashes for proper routing
+  trailingSlash: true,
 };
 
 export default nextConfig;
