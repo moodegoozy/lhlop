@@ -26,6 +26,7 @@ export const translations = {
     close: 'إغلاق',
     view: 'عرض',
     view_details: 'عرض التفاصيل',
+    viewAll: 'عرض الكل',
     actions: 'الإجراءات',
     status: 'الحالة',
     date: 'التاريخ',
@@ -439,77 +440,120 @@ export const translations = {
   // Home Page
   // ============================================
   home: {
-    hero_title: 'اكتشف أفضل المعلمين',
-    hero_subtitle: 'في المملكة العربية السعودية',
-    hero_description: 'منصة متكاملة تربط الطلاب بنخبة المعلمين المعتمدين في جميع المراحل والتخصصات',
-    search_placeholder: 'ابحث عن معلم أو مادة...',
-    browse_teachers: 'تصفح المعلمين',
-    join_as_teacher: 'انضم كمعلم',
-    features_title: 'لماذا نحن؟',
-    feature_1_title: 'معلمون معتمدون',
-    feature_1_desc: 'جميع معلمينا معتمدون ومؤهلون أكاديميًا',
-    feature_2_title: 'حجز سهل',
-    feature_2_desc: 'احجز دروسك في ثوانٍ عبر منصتنا السهلة',
-    feature_3_title: 'تقييمات موثوقة',
-    feature_3_desc: 'اطلع على تقييمات حقيقية من طلاب سابقين',
-    stats_teachers: 'معلم معتمد',
-    stats_students: 'طالب نشط',
-    stats_lessons: 'درس مكتمل',
-    stats_rating: 'متوسط التقييم',
-    popular_subjects: 'المواد الأكثر طلبًا',
-    top_teachers: 'أفضل المعلمين',
-    see_all: 'عرض الكل',
+    // Hero Section
+    badge: 'منصة المعلمين الأولى في السعودية',
+    title: 'اكتشف أفضل المعلمين',
+    subtitle: 'في المملكة العربية السعودية',
+    findTeacher: 'ابحث عن معلم',
+    becomeTeacher: 'انضم كمعلم',
+    stats: {
+      teachers: 'معلم معتمد',
+      students: 'طالب نشط',
+      lessons: 'درس مكتمل',
+    },
+    // Quick Search
+    quickSearch: 'بحث سريع',
+    viewAllTeachers: 'عرض جميع المعلمين',
+    // Sections
+    popularSubjects: 'المواد الأكثر طلبًا',
+    featuredTeachers: 'المعلمين المميزين',
+    ourServices: 'خدماتنا',
+    testimonials: 'آراء العملاء',
+    // How It Works
+    howItWorks: {
+      title: 'كيف يعمل؟',
+      step1: {
+        title: 'ابحث عن معلم',
+        description: 'تصفح المعلمين وفلتر حسب المادة والمدينة',
+      },
+      step2: {
+        title: 'احجز موعد',
+        description: 'اختر الوقت المناسب لك',
+      },
+      step3: {
+        title: 'ادفع بأمان',
+        description: 'طرق دفع آمنة ومتعددة',
+      },
+      step4: {
+        title: 'تعلّم واستفد',
+        description: 'استمتع بدروس مع أفضل المعلمين',
+      },
+    },
+    // CTA
+    cta: {
+      title: 'ابدأ رحلتك التعليمية اليوم',
+      subtitle: 'انضم لآلاف الطلاب الذين يتعلمون مع منصتنا',
+      loggedIn: 'ابحث عن معلمك المثالي',
+      loggedInSubtitle: 'تصفح المعلمين واحجز درسك الآن',
+    },
   },
 
   // ============================================
   // Footer
   // ============================================
   footer: {
-    about_us: 'من نحن',
-    contact_us: 'تواصل معنا',
-    privacy_policy: 'سياسة الخصوصية',
-    terms_of_service: 'شروط الاستخدام',
+    brand: 'منصة المعلمين',
+    about: 'منصة تعليمية سعودية تربط الطلاب بأفضل المعلمين المعتمدين',
+    quickLinks: 'روابط سريعة',
+    support: 'الدعم',
     faq: 'الأسئلة الشائعة',
-    all_rights_reserved: 'جميع الحقوق محفوظة',
-    follow_us: 'تابعنا',
-    address: 'المملكة العربية السعودية، الرياض',
-    phone: 'الهاتف',
-    email: 'البريد الإلكتروني',
+    terms: 'الشروط والأحكام',
+    privacy: 'سياسة الخصوصية',
+    copyright: '© 2025 منصة المعلمين. جميع الحقوق محفوظة.',
   },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
 
+// Helper to access nested object properties
+function getNestedValue(obj: Record<string, unknown>, path: string): string | undefined {
+  const keys = path.split('.');
+  let current: unknown = obj;
+  
+  for (const key of keys) {
+    if (current && typeof current === 'object' && key in current) {
+      current = (current as Record<string, unknown>)[key];
+    } else {
+      return undefined;
+    }
+  }
+  
+  return typeof current === 'string' ? current : undefined;
+}
+
 // Overloaded translation function
-// Supports: t('section.key') or t('section', 'key') or t('section', 'key', { replacements })
+// Supports: t('section.key') or t('section.nested.key') with deep nesting
 export function t(
   key: string,
   keyOrReplacements?: string | Record<string, string | number>,
   replacements?: Record<string, string | number>
 ): string {
-  let section: TranslationKey;
-  let actualKey: string;
   let actualReplacements: Record<string, string | number> | undefined;
+  let text: string | undefined;
 
-  // Check if key contains a dot (dotted notation: 'section.key')
-  if (key.includes('.') && (typeof keyOrReplacements !== 'string' || keyOrReplacements === undefined)) {
-    const parts = key.split('.');
-    section = parts[0] as TranslationKey;
-    actualKey = parts.slice(1).join('.');
-    actualReplacements = keyOrReplacements as Record<string, string | number> | undefined;
-  } else {
-    // Two-argument notation: t('section', 'key')
-    section = key as TranslationKey;
-    actualKey = keyOrReplacements as string;
+  // Check if second argument is replacements object
+  if (typeof keyOrReplacements === 'object') {
+    actualReplacements = keyOrReplacements;
+  } else if (typeof keyOrReplacements === 'string') {
+    // Handle legacy two-argument format: t('section', 'key')
+    key = `${key}.${keyOrReplacements}`;
     actualReplacements = replacements;
   }
 
-  const sectionData = translations[section] as Record<string, string>;
-  let text = sectionData?.[actualKey] ?? actualKey;
+  // Try to get nested value from translations
+  text = getNestedValue(translations as unknown as Record<string, unknown>, key);
+  
+  // Fallback to key itself if not found
+  if (!text) {
+    // Try to get just the last part for display
+    const parts = key.split('.');
+    text = parts[parts.length - 1];
+  }
 
+  // Apply replacements
   if (actualReplacements) {
     Object.entries(actualReplacements).forEach(([placeholder, value]) => {
-      text = text.replace(`{${placeholder}}`, String(value));
+      text = text!.replace(`{${placeholder}}`, String(value));
     });
   }
 
