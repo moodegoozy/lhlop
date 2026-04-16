@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 
+type Theme = 'light' | 'dark' | 'system';
+
 interface UIStore {
+  // Theme
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+
   // Sidebar
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
@@ -37,6 +43,28 @@ interface UIStore {
 }
 
 export const useUIStore = create<UIStore>((set, get) => ({
+  // Theme
+  theme: 'system',
+  setTheme: (theme) => {
+    set({ theme });
+    if (typeof window !== 'undefined') {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else if (theme === 'light') {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        localStorage.removeItem('theme');
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    }
+  },
+
   // Sidebar
   isSidebarOpen: false,
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),

@@ -1,52 +1,88 @@
 # Project Guidelines — lhlop (منصة المعلمين)
 
-Saudi teacher booking platform built with Laravel 8 + Livewire 2 + Alpine.js + Tailwind CSS v4.
+Saudi teacher booking platform — monorepo with multiple applications.
 
-## Architecture
+## Workspace Structure
 
-- **Livewire-first**: No custom controllers. All page logic lives in Livewire components (`app/Http/Livewire/`). Routes use closures or return views that mount Livewire components.
-- **Four role-based layouts**: `app` (public), `admin` (admin panel), `teacher` (teacher dashboard), `minimal` (auth pages).
-- **Dual file locations**: Source views are in `/resources/views/` (primary — edit here). `/laravel-app/resources/views/` mirrors them for deployment. Keep both in sync.
-- **Entry point**: `public_html/index.php` → bootstraps `../laravel-app/`.
-- **Database**: MySQL 8.0 via Docker/Sail. Core models exist (`Teacher`, `Category`, `User`) with migrations. Booking model and related features still need implementation.
-
-## Code Style
-
-- **Language**: Arabic is the primary UI language (`locale => 'ar'`). Code identifiers, comments, and variable names should be in English.
-- **Livewire naming**: kebab-case for component tags (`<livewire:home-page />`), PascalCase for PHP classes (`HomePage.php`).
-- **Blade components**: kebab-case filenames in `resources/views/components/`.
-- **CSS**: Tailwind utility-first with custom `@layer components` classes (`.glass`, `.teacher-card`, `.btn`, `.admin-*`). Dark mode via `.dark` class. RTL via `dir="rtl"`.
-- **JavaScript**: Alpine.js for interactivity (loaded via Livewire, not imported manually). Leaflet.js for maps.
-
-## Build and Test
-
-```bash
-# Docker environment (Laravel Sail)
-cd laravel-app
-./vendor/bin/sail up -d          # Start MySQL + PHP 8.2
-./vendor/bin/sail artisan migrate
-
-# Frontend assets (Vite — ignore legacy webpack.mix.js)
-npm run dev                      # Dev server
-npm run build                    # Production build
-
-# Tests
-./vendor/bin/phpunit             # or ./vendor/bin/sail test
+```
+/edu-platform/     ← Main frontend (Next.js 16 + React 19) — ACTIVE DEVELOPMENT
+/laravel-app/      ← Legacy backend (Laravel 8 + Livewire 2)
+/react-app/        ← Deprecated (use edu-platform instead)
+/resources/        ← Shared Laravel views
+/public_html/      ← Hostinger deployment entry point
 ```
 
-See [DEPLOYMENT.md](../DEPLOYMENT.md) for Hostinger deployment steps.
+## Active Stack: edu-platform
 
-## Conventions
+| Layer | Tech |
+|-------|------|
+| Framework | Next.js 16.2 (static export) |
+| UI | React 19 + Radix UI + Tailwind CSS 4 |
+| State | Zustand with persist |
+| Auth/DB | Firebase + Supabase |
+| Icons | lucide-react |
+| Forms | react-hook-form + zod |
 
-- **Translations**: Use `__('key')` with JSON translation files (`resources/lang/ar.json`). English is fallback.
-- **Fonts**: Cairo (Arabic) + Inter (Latin). Custom Saudi Riyal symbol font in `public_html/fonts/`.
-- **CDN deps**: jQuery 3.7.1, Select2, intl-tel-input are loaded via CDN in `layouts/app.blade.php` only — do not add npm packages for these.
-- **Asset loading**: `admin.blade.php`, `teacher.blade.php`, and `minimal.blade.php` use `@vite()`. `app.blade.php` uses hardcoded asset paths — migrate to `@vite()` when possible.
-- **Dark mode**: Three-way sync (localStorage + system preference + Alpine.js store). Logic in `resources/js/dark.js`.
+### Build Commands
+
+```bash
+cd edu-platform
+npm run dev     # Development server
+npm run build   # Static export to /out
+npm run lint    # ESLint
+```
+
+**Deploy**: Firebase Hosting (firebase.json configured for /out)
+
+### Key Patterns
+
+- **Static export only** — `output: 'export'` in next.config.ts, no SSR/ISR
+- **Arabic-first** — RTL layout, Cairo + Inter fonts
+- **CVA variants** — Use `cn()` utility for Tailwind class composition
+- **Role-based routing** — 5 roles: admin, teacher, parent, student, child
+- **Mock-first dev** — Data in `/src/data/mock.ts` for development
+- **Zustand stores** — See `/src/store/` (auth, ui, filters, booking, dashboard)
+
+See [edu-platform/docs/ARCHITECTURE.md](../edu-platform/docs/ARCHITECTURE.md) for full route map and permissions.
+
+---
+
+## Legacy Stack: laravel-app
+
+Laravel 8 + Livewire 2 + Alpine.js + Tailwind CSS v4.
+
+### Architecture
+
+- **Livewire-first** — No custom controllers. Page logic in `app/Http/Livewire/`
+- **Four layouts**: `app` (public), `admin`, `teacher`, `minimal` (auth)
+- **Dual views**: `/resources/views/` (primary) ↔ `/laravel-app/resources/views/` (keep in sync)
+- **Database**: MySQL 8.0 via Docker/Sail
+
+### Build Commands
+
+```bash
+cd laravel-app
+./vendor/bin/sail up -d           # Start Docker
+./vendor/bin/sail artisan migrate # Run migrations
+npm run dev                       # Vite dev server
+npm run build                     # Production build
+./vendor/bin/phpunit              # Tests
+```
+
+See [DEPLOYMENT.md](../DEPLOYMENT.md) for Hostinger deployment.
+
+---
+
+## Global Conventions
+
+- **UI Language**: Arabic primary (`locale => 'ar'`). Code/comments in English.
+- **RTL**: Always use `dir="rtl"` and RTL-aware Tailwind utilities
+- **Dark mode**: Support via `.dark` class (localStorage + system preference)
+- **Translations**: Use `__('key')` (Laravel) or constants (Next.js) with Arabic JSON files
 
 ## Pitfalls
 
-- **XSS risk**: `emails/dynamic.blade.php` renders `{!! $html_content !!}` unescaped. Sanitize HTML in the backend before passing to this template.
-- **Stub data in HomePage**: `HomePage.php` returns hardcoded filter options. Real database queries should replace the placeholder data.
-- **File duplication**: `/resources/` and `/laravel-app/resources/` can drift out of sync. Always verify both locations after view changes.
-- **`DO_NOT_UPLOAD_HERE/`**: This folder exists as a deployment guard — do not place files in it.
+- **`DO_NOT_UPLOAD_HERE/`** — Deployment guard, never place files here
+- **File sync** — `/resources/` and `/laravel-app/resources/` can drift; verify both after view changes
+- **XSS in emails** — `emails/dynamic.blade.php` uses `{!! !!}` — sanitize HTML before passing
+- **Static export limits** — edu-platform has no SSR; use `generateStaticParams` for dynamic routes

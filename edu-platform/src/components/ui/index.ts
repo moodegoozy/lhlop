@@ -81,6 +81,9 @@ export { Rating, RatingBadge } from './rating';
 // Tabs
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
 
+// Progress
+export { Progress } from './progress';
+
 // Spinner
 export { Spinner, PageSpinner, LoadingInline, ButtonSpinner } from './spinner';
 

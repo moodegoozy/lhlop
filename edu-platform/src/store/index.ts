@@ -15,3 +15,16 @@ export {
   formatBookingPrice,
   calculateTotalPrice,
 } from './booking.store';
+
+// Dashboard Store
+export { useDashboardStore } from './dashboard.store';
+export type {
+  ChildProfile,
+  WalletTransaction,
+  Notification,
+  ChatMessage,
+  ChatConversation,
+  Ticket,
+  Achievement,
+  ForumPost,
+} from './dashboard.store';
