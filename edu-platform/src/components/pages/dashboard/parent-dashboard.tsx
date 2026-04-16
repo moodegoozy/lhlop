@@ -1,486 +1,227 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Input } from '@/components/ui/input';
-import { StatsCard } from '@/components/cards/stats-card';
-import { ChildCard } from '@/components/cards/child-card';
-import { BookingCard } from '@/components/cards/booking-card';
-import { 
-  Calendar,
-  DollarSign,
-  Users,
-  Plus,
-  Bell,
-  Settings,
-  BookOpen,
-  Clock,
-  CheckCircle,
-  TrendingUp,
-  CreditCard,
-  Search,
-  ChevronLeft,
-  Star,
-  MapPin,
-  Video
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useAuthStore } from '@/store/auth.store';
-import type { ChildProfile, Booking } from '@/types';
-
-// Mock children data
-const mockChildren: ChildProfile[] = [
-  {
-    id: 'C1',
-    parent_user_id: 'P1',
-    child_user_id: 'UC1',
-    full_name: 'عمر الأحمد',
-    age: 12,
-    grade_level: 'الصف السادس',
-    school_name: 'مدرسة الأمير فيصل المتوسطة',
-    learning_goals: ['تحسين مستوى الرياضيات', 'التأسيس في الفيزياء'],
-    is_active: true,
-    created_at: '2023-06-01T00:00:00Z',
-    updated_at: '2024-01-10T00:00:00Z',
-  },
-  {
-    id: 'C2',
-    parent_user_id: 'P1',
-    child_user_id: 'UC2',
-    full_name: 'نورة الأحمد',
-    age: 9,
-    grade_level: 'الصف الثالث',
-    school_name: 'مدرسة الأميرة نورة الابتدائية',
-    learning_goals: ['تعلم اللغة الإنجليزية', 'تطوير مهارات القراءة'],
-    is_active: true,
-    created_at: '2023-08-01T00:00:00Z',
-    updated_at: '2024-01-15T00:00:00Z',
-  },
-];
-
-const mockStats = {
-  total_spent: 4500,
-  active_bookings: 4,
-  completed_sessions: 28,
-  children_count: 2,
-};
-
-const mockUpcomingBookings: Booking[] = [
-  {
-    id: 'B001',
-    teacher_user_id: 'T1',
-    booked_by_user_id: 'P1',
-    booked_for_type: 'child',
-    booked_for_user_id: 'C1',
-    subject_id: 'math',
-    service_id: 'private_lesson',
-    lesson_mode: 'remote',
-    booking_date: '2024-01-20',
-    start_time: '16:00',
-    end_time: '17:00',
-    duration_snapshot: 60,
-    price_snapshot: 150,
-    status: 'confirmed',
-    notes: null,
-    created_at: '2024-01-15T10:00:00Z',
-    updated_at: '2024-01-15T10:00:00Z',
-    subject: {
-      id: 'math',
-      name_ar: 'الرياضيات',
-      name_en: 'Mathematics',
-      icon: '📐',
-      is_active: true,
-      sort_order: 1,
-      created_at: '2023-01-01T00:00:00Z',
-      updated_at: '2023-01-01T00:00:00Z',
-    },
-  },
-  {
-    id: 'B002',
-    teacher_user_id: 'T2',
-    booked_by_user_id: 'P1',
-    booked_for_type: 'child',
-    booked_for_user_id: 'C2',
-    subject_id: 'english',
-    service_id: 'private_lesson',
-    lesson_mode: 'in_person',
-    booking_date: '2024-01-21',
-    start_time: '14:00',
-    end_time: '15:00',
-    duration_snapshot: 60,
-    price_snapshot: 120,
-    status: 'confirmed',
-    notes: null,
-    created_at: '2024-01-16T08:00:00Z',
-    updated_at: '2024-01-16T08:00:00Z',
-    subject: {
-      id: 'english',
-      name_ar: 'اللغة الإنجليزية',
-      name_en: 'English',
-      icon: '🔤',
-      is_active: true,
-      sort_order: 2,
-      created_at: '2023-01-01T00:00:00Z',
-      updated_at: '2023-01-01T00:00:00Z',
-    },
-  },
-];
-
-interface AddChildModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-function AddChildModal({ isOpen, onClose }: AddChildModalProps) {
-  const [formData, setFormData] = useState({
-    full_name: '',
-    birth_date: '',
-    grade_level: '',
-    school_name: '',
-  });
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>إضافة طفل جديد</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">الاسم الكامل</label>
-            <Input
-              value={formData.full_name}
-              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              placeholder="اسم الطفل"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">تاريخ الميلاد</label>
-            <Input
-              type="date"
-              value={formData.birth_date}
-              onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">المرحلة الدراسية</label>
-            <select
-              value={formData.grade_level}
-              onChange={(e) => setFormData({ ...formData, grade_level: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-700"
-            >
-              <option value="">اختر المرحلة</option>
-              <option value="kindergarten">رياض الأطفال</option>
-              <option value="primary">ابتدائي</option>
-              <option value="middle">متوسط</option>
-              <option value="high">ثانوي</option>
-            </select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">اسم المدرسة (اختياري)</label>
-            <Input
-              value={formData.school_name}
-              onChange={(e) => setFormData({ ...formData, school_name: e.target.value })}
-              placeholder="اسم المدرسة"
-            />
-          </div>
-          <div className="flex gap-3 pt-4">
-            <Button className="flex-1" onClick={onClose}>
-              إضافة
-            </Button>
-            <Button variant="outline" className="flex-1" onClick={onClose}>
-              إلغاء
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+import * as React from 'react';
+import Link from 'next/link';
+import { PageContainer } from '@/components/layout';
+import { ROUTES } from '@/lib/constants';
+import { mockBookings, mockUsers } from '@/data/mock';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export function ParentDashboard() {
-  const { user } = useAuthStore();
-  const [showAddChild, setShowAddChild] = useState(false);
-  const [selectedChild, setSelectedChild] = useState<string | null>(null);
+  const parent = mockUsers.find(u => u.role === 'parent');
+  const children = mockUsers.filter(u => u.role === 'child');
+  const [activeTab, setActiveTab] = React.useState('overview');
 
-  const filteredBookings = selectedChild
-    ? mockUpcomingBookings.filter((b) => b.booked_for_user_id === selectedChild)
-    : mockUpcomingBookings;
+  const tabs = [
+    { id: 'overview', label: 'نظرة عامة', icon: '📊' },
+    { id: 'children', label: 'أبنائي', icon: '👶' },
+    { id: 'bookings', label: 'الحجوزات', icon: '📅' },
+    { id: 'teachers', label: 'المعلمين', icon: '👨‍🏫' },
+    { id: 'payments', label: 'المدفوعات', icon: '💳' },
+    { id: 'settings', label: 'الإعدادات', icon: '⚙️' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                مرحباً، {user?.full_name || 'ولي الأمر'}
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                إدارة تعليم أطفالك
-              </p>
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      {/* Sidebar */}
+      <aside className="fixed top-0 right-0 h-screen w-64 border-l hidden lg:block" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
+        <div className="p-6">
+          <Link href={ROUTES.HOME}>
+            <h1 
+              className="text-2xl font-bold mb-8"
+              style={{
+                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              لهلوب
+            </h1>
+          </Link>
+
+          <nav className="space-y-2">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-right transition-all duration-300 ${
+                  activeTab === tab.id 
+                    ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 font-semibold' 
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
+              >
+                <span className="text-xl">{tab.icon}</span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold">
+              {parent?.full_name?.charAt(0) || 'و'}
             </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">
-                  2
-                </span>
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-              </Button>
+            <div className="flex-1">
+              <p className="font-medium text-sm">{parent?.full_name || 'ولي أمر'}</p>
+              <p className="text-xs text-gray-500">ولي أمر</p>
+            </div>
+            <ThemeToggle />
+          </div>
+        </div>
+      </aside>
+
+      <main className="lg:mr-64 p-6 lg:p-8">
+        {/* Welcome Section */}
+        <div 
+          className="rounded-3xl p-8 mb-8"
+          style={{
+            background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #c084fc 100%)',
+          }}
+        >
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="text-white">
+              <h1 className="text-3xl font-bold mb-2">مرحباً {parent?.full_name || 'ولي الأمر'} 👋</h1>
+              <p className="text-white/80">تابع تقدم أبنائك التعليمي</p>
+            </div>
+            <Link href={ROUTES.TEACHERS}>
+              <button className="btn-gold px-6 py-3 rounded-xl font-semibold">
+                احجز حصة جديدة ✨
+              </button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Children Cards */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <span>👶</span> أبنائي
+            </h2>
+            <button className="px-4 py-2 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 text-sm font-medium hover:bg-purple-200 dark:hover:bg-purple-900 transition-colors">
+              + إضافة طفل
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {children.map((child, index) => (
+              <div key={child.id} className="premium-card p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${
+                    index % 3 === 0 ? 'from-blue-500 to-cyan-500' : 
+                    index % 3 === 1 ? 'from-pink-500 to-rose-500' : 
+                    'from-green-500 to-emerald-500'
+                  } flex items-center justify-center text-white text-2xl font-bold shadow-lg`}>
+                    {child.full_name?.charAt(0) || '👶'}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg">{child.full_name}</h3>
+                    <p className="text-sm text-gray-500">الصف السادس</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">الحصص المكتملة</span>
+                    <span className="font-bold">12</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">الحصص القادمة</span>
+                    <span className="font-bold text-purple-600">3</span>
+                  </div>
+                  <div className="pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
+                    <Link href={ROUTES.TEACHERS}>
+                      <button className="w-full py-2.5 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 text-sm font-medium hover:bg-purple-200 dark:hover:bg-purple-900 transition-colors">
+                        احجز حصة
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {/* Add Child Card */}
+            <div className="premium-card p-6 border-2 border-dashed flex flex-col items-center justify-center text-center cursor-pointer hover:border-purple-400 transition-colors">
+              <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-3xl mb-4">
+                ➕
+              </div>
+              <h3 className="font-bold text-lg mb-1">إضافة طفل</h3>
+              <p className="text-sm text-gray-500">أضف حساب لطفلك</p>
             </div>
           </div>
         </div>
-      </header>
 
-      <main className="p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard
-            title="الأطفال"
-            value={mockStats.children_count.toString()}
-            icon={<Users className="h-5 w-5" />}
-          />
-          <StatsCard
-            title="الحجوزات النشطة"
-            value={mockStats.active_bookings.toString()}
-            icon={<Calendar className="h-5 w-5" />}
-          />
-          <StatsCard
-            title="الحصص المكتملة"
-            value={mockStats.completed_sessions.toString()}
-            icon={<CheckCircle className="h-5 w-5 text-green-500" />}
-            trend={{ value: 15, isPositive: true }}
-          />
-          <StatsCard
-            title="إجمالي الإنفاق"
-            value={`${mockStats.total_spent.toLocaleString('ar-SA')} ر.س`}
-            icon={<DollarSign className="h-5 w-5" />}
-          />
-        </div>
-
-        {/* Children Section */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-lg">أطفالي</CardTitle>
-            <Button size="sm" onClick={() => setShowAddChild(true)}>
-              <Plus className="h-4 w-4 ml-1" />
-              إضافة طفل
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mockChildren.map((child) => (
-                <ChildCard
-                  key={child.id}
-                  child={child}
-                  onEdit={() => console.log('Edit child:', child.id)}
-                  onViewBookings={() => console.log('View bookings:', child.id)}
-                  onBookLesson={() => console.log('Book lesson:', child.id)}
-                  bookingsCount={
-                    mockUpcomingBookings.filter((b) => b.booked_for_user_id === child.id).length
-                  }
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Upcoming Bookings */}
-          <Card className="lg:col-span-2">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">الحجوزات القادمة</CardTitle>
-                <div className="flex items-center gap-2">
-                  <select
-                    value={selectedChild || ''}
-                    onChange={(e) => setSelectedChild(e.target.value || null)}
-                    className="text-sm p-1.5 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-700"
-                  >
-                    <option value="">جميع الأطفال</option>
-                    {mockChildren.map((child) => (
-                      <option key={child.id} value={child.id}>
-                        {child.full_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="premium-card p-5">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-xl">
+                📅
               </div>
-            </CardHeader>
-            <CardContent>
-              {filteredBookings.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>لا توجد حجوزات قادمة</p>
-                  <Button variant="link" className="mt-2">
-                    ابحث عن معلم
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {filteredBookings.map((booking) => (
-                    <div
-                      key={booking.id}
-                      className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                    >
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={booking.teacher?.user?.avatar_url || undefined} />
-                        <AvatarFallback>
-                          {booking.teacher?.user?.full_name?.slice(0, 2)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <h4 className="font-medium text-gray-900 dark:text-white">
-                              {booking.subject?.name_ar ?? 'درس'}
-                            </h4>
-                            <p className="text-sm text-gray-500">
-                              {mockChildren.find((c) => c.id === booking.booked_for_user_id)?.full_name ?? 'طالب'}
-                            </p>
-                          </div>
-                          <Badge
-                            variant={
-                              booking.status === 'confirmed' ? 'default' : 'secondary'
-                            }
-                          >
-                            {booking.status === 'confirmed' ? 'مؤكد' : 'معلق'}
-                          </Badge>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-600 dark:text-gray-400">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            {new Date(booking.booking_date).toLocaleDateString('ar-SA')}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {booking.start_time}
-                          </div>
-                          {booking.lesson_mode === 'remote' ? (
-                            <div className="flex items-center gap-1 text-blue-600">
-                              <Video className="h-4 w-4" />
-                              عن بعد
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1 text-green-600">
-                              <MapPin className="h-4 w-4" />
-                              حضوري
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Button size="sm" variant="outline">
-                          تفاصيل
-                        </Button>
-                        {booking.lesson_mode === 'remote' &&
-                          booking.status === 'confirmed' && (
-                            <Button size="sm">
-                              <Video className="h-4 w-4 ml-1" />
-                              انضمام
-                            </Button>
-                          )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">إجراءات سريعة</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full justify-start gap-3 h-auto py-3">
-                <Search className="h-5 w-5 text-primary-500" />
-                <div className="text-right">
-                  <p className="font-medium">البحث عن معلم</p>
-                  <p className="text-xs text-gray-500">اعثر على المعلم المناسب</p>
-                </div>
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-3 h-auto py-3">
-                <Calendar className="h-5 w-5 text-primary-500" />
-                <div className="text-right">
-                  <p className="font-medium">حجز درس جديد</p>
-                  <p className="text-xs text-gray-500">احجز حصة لأحد أطفالك</p>
-                </div>
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-3 h-auto py-3">
-                <BookOpen className="h-5 w-5 text-primary-500" />
-                <div className="text-right">
-                  <p className="font-medium">تقارير التقدم</p>
-                  <p className="text-xs text-gray-500">تابع تطور أطفالك</p>
-                </div>
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-3 h-auto py-3">
-                <CreditCard className="h-5 w-5 text-primary-500" />
-                <div className="text-right">
-                  <p className="font-medium">سجل المدفوعات</p>
-                  <p className="text-xs text-gray-500">عرض جميع العمليات المالية</p>
-                </div>
-              </Button>
-            </CardContent>
-          </Card>
+              <div>
+                <p className="text-sm text-gray-500">إجمالي الحجوزات</p>
+                <p className="text-2xl font-bold">{mockBookings.length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="premium-card p-5">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-xl">
+                ✅
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">مكتملة</p>
+                <p className="text-2xl font-bold">{mockBookings.filter(b => b.status === 'completed').length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="premium-card p-5">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-xl">
+                ⏳
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">قادمة</p>
+                <p className="text-2xl font-bold">{mockBookings.filter(b => b.status === 'confirmed').length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="premium-card p-5">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-xl">
+                💰
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">المدفوعات</p>
+                <p className="text-2xl font-bold">2,500</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Recommended Teachers */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-lg">معلمون موصى بهم</CardTitle>
-            <Button variant="link" size="sm">
-              عرض المزيد
-              <ChevronLeft className="h-4 w-4 mr-1" />
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-primary-300 dark:hover:border-primary-700 transition-colors"
-                >
-                  <div className="flex items-start gap-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback>م{i}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <h4 className="font-medium">معلم {i}</h4>
-                      <p className="text-sm text-gray-500">الرياضيات، الفيزياء</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        <span className="text-sm font-medium">4.{9 - i}</span>
-                        <span className="text-xs text-gray-400">(12{i})</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 mt-3">
-                    <Button size="sm" className="flex-1">
-                      حجز
-                    </Button>
-                    <Button size="sm" variant="outline" className="flex-1">
-                      عرض
-                    </Button>
-                  </div>
+        {/* Upcoming Bookings */}
+        <div className="premium-card p-6">
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <span>📅</span> الحجوزات القادمة
+          </h2>
+          <div className="space-y-4">
+            {mockBookings.filter(b => b.status === 'confirmed').slice(0, 3).map((booking) => (
+              <div key={booking.id} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold">
+                  {booking.booking_date?.split('-')[2] || '15'}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <div className="flex-1">
+                  <p className="font-medium">حصة {booking.subject?.name_ar || 'رياضيات'}</p>
+                  <p className="text-sm text-gray-500">{booking.booking_date} - {booking.start_time}</p>
+                </div>
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                  مؤكد
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       </main>
-
-      <AddChildModal isOpen={showAddChild} onClose={() => setShowAddChild(false)} />
     </div>
   );
 }

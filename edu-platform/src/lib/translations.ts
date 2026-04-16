@@ -453,6 +453,7 @@ export const translations = {
     },
     // Quick Search
     quickSearch: 'بحث سريع',
+    viewAll: 'عرض الكل',
     viewAllTeachers: 'عرض جميع المعلمين',
     // Sections
     popularSubjects: 'المواد الأكثر طلبًا',
@@ -492,14 +493,18 @@ export const translations = {
   // Footer
   // ============================================
   footer: {
-    brand: 'منصة المعلمين',
+    brand: 'لهلوب',
+    description: 'منصتك الأولى للتميز - منصة تعليمية سعودية تربط الطلاب بأفضل المعلمين المعتمدين',
     about: 'منصة تعليمية سعودية تربط الطلاب بأفضل المعلمين المعتمدين',
     quickLinks: 'روابط سريعة',
+    forTeachers: 'للمعلمين',
     support: 'الدعم',
+    resources: 'الموارد',
+    helpCenter: 'مركز المساعدة',
     faq: 'الأسئلة الشائعة',
     terms: 'الشروط والأحكام',
     privacy: 'سياسة الخصوصية',
-    copyright: '© 2025 منصة المعلمين. جميع الحقوق محفوظة.',
+    copyright: 'جميع الحقوق محفوظة.',
   },
 } as const;
 

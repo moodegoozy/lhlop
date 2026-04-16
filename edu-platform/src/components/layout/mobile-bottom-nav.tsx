@@ -184,7 +184,7 @@ function getNavItems(role?: UserRole, unreadNotifications = 0): NavItem[] {
           activeIcon: <DashboardIcon active />,
         },
         {
-          href: ROUTES.ADMIN_PROFILE,
+          href: ROUTES.ADMIN_DASHBOARD,
           label: t('nav.profile'),
           icon: <UserIcon />,
           activeIcon: <UserIcon active />,
@@ -200,20 +200,20 @@ function getNavItems(role?: UserRole, unreadNotifications = 0): NavItem[] {
           activeIcon: <DashboardIcon active />,
         },
         {
-          href: ROUTES.TEACHER_BOOKINGS,
+          href: ROUTES.TEACHER_DASHBOARD,
           label: t('nav.myBookings'),
           icon: <CalendarIcon />,
           activeIcon: <CalendarIcon active />,
         },
         {
-          href: ROUTES.TEACHER_NOTIFICATIONS,
+          href: ROUTES.TEACHER_DASHBOARD,
           label: t('nav.notifications'),
           icon: <NotificationIcon />,
           activeIcon: <NotificationIcon active />,
           badge: unreadNotifications > 0 ? unreadNotifications : undefined,
         },
         {
-          href: ROUTES.TEACHER_PROFILE,
+          href: ROUTES.TEACHER_DASHBOARD,
           label: t('nav.profile'),
           icon: <UserIcon />,
           activeIcon: <UserIcon active />,
@@ -224,19 +224,19 @@ function getNavItems(role?: UserRole, unreadNotifications = 0): NavItem[] {
       return [
         ...commonItems,
         {
-          href: ROUTES.PARENT_CHILDREN,
+          href: ROUTES.PARENT_DASHBOARD,
           label: t('nav.myChildren'),
           icon: <ChildrenIcon />,
           activeIcon: <ChildrenIcon active />,
         },
         {
-          href: ROUTES.PARENT_BOOKINGS,
+          href: ROUTES.PARENT_DASHBOARD,
           label: t('nav.bookings'),
           icon: <CalendarIcon />,
           activeIcon: <CalendarIcon active />,
         },
         {
-          href: ROUTES.PARENT_PROFILE,
+          href: ROUTES.PARENT_DASHBOARD,
           label: t('nav.profile'),
           icon: <UserIcon />,
           activeIcon: <UserIcon active />,
@@ -252,13 +252,13 @@ function getNavItems(role?: UserRole, unreadNotifications = 0): NavItem[] {
           activeIcon: <HomeIcon active />,
         },
         {
-          href: ROUTES.CHILD_LESSONS,
+          href: ROUTES.CHILD_DASHBOARD,
           label: t('nav.myLessons'),
           icon: <CalendarIcon />,
           activeIcon: <CalendarIcon active />,
         },
         {
-          href: ROUTES.CHILD_PROFILE,
+          href: ROUTES.CHILD_DASHBOARD,
           label: t('nav.profile'),
           icon: <UserIcon />,
           activeIcon: <UserIcon active />,
@@ -269,20 +269,20 @@ function getNavItems(role?: UserRole, unreadNotifications = 0): NavItem[] {
       return [
         ...commonItems,
         {
-          href: ROUTES.STUDENT_BOOKINGS,
+          href: ROUTES.STUDENT_DASHBOARD,
           label: t('nav.myBookings'),
           icon: <CalendarIcon />,
           activeIcon: <CalendarIcon active />,
         },
         {
-          href: ROUTES.STUDENT_NOTIFICATIONS,
+          href: ROUTES.STUDENT_DASHBOARD,
           label: t('nav.notifications'),
           icon: <NotificationIcon />,
           activeIcon: <NotificationIcon active />,
           badge: unreadNotifications > 0 ? unreadNotifications : undefined,
         },
         {
-          href: ROUTES.STUDENT_PROFILE,
+          href: ROUTES.STUDENT_DASHBOARD,
           label: t('nav.profile'),
           icon: <UserIcon />,
           activeIcon: <UserIcon active />,

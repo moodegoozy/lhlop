@@ -1,552 +1,368 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { StatsCard } from '@/components/cards/stats-card';
-import { t } from '@/lib/translations';
-import { 
-  Users, 
-  GraduationCap, 
-  Calendar, 
-  DollarSign,
-  Search,
-  Filter,
-  MoreVertical,
-  CheckCircle,
-  XCircle,
-  Clock,
-  TrendingUp,
-  TrendingDown,
-  Eye,
-  Ban,
-  UserCheck,
-  AlertTriangle,
-  Settings,
-  FileText,
-  Bell,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import * as React from 'react';
+import Link from 'next/link';
+import { PageContainer } from '@/components/layout';
+import { ROUTES } from '@/lib/constants';
+import { mockTeacherProfiles, mockBookings, mockUsers } from '@/data/mock';
+import ThemeToggle from '@/components/ThemeToggle';
 
-// Types
-interface PendingTeacher {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  subjects: string[];
-  experience_years: number;
-  submitted_at: string;
-  documents_count: number;
-  avatar_url: string | null;
+// Stats Card Component
+function StatCard({ title, value, icon, change, color }: { 
+  title: string; 
+  value: string | number; 
+  icon: string; 
+  change?: string;
+  color: string;
+}) {
+  return (
+    <div 
+      className="premium-card p-6 hover:shadow-xl transition-all duration-300"
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{title}</p>
+          <p className="text-3xl font-bold">{value}</p>
+          {change && (
+            <p className={`text-sm mt-2 ${change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
+              {change} من الشهر الماضي
+            </p>
+          )}
+        </div>
+        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-2xl text-white shadow-lg`}>
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-interface RecentBooking {
-  id: string;
-  teacher_name: string;
-  student_name: string;
-  subject: string;
-  date: string;
-  status: 'confirmed' | 'pending' | 'cancelled';
-  amount: number;
+// Quick Action Button
+function QuickAction({ icon, label, onClick }: { icon: string; label: string; onClick?: () => void }) {
+  return (
+    <button 
+      onClick={onClick}
+      className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-300 hover:scale-105"
+    >
+      <span className="text-2xl">{icon}</span>
+      <span className="text-sm font-medium">{label}</span>
+    </button>
+  );
 }
-
-interface SystemAlert {
-  id: string;
-  type: 'warning' | 'error' | 'info';
-  message: string;
-  created_at: string;
-}
-
-// Mock data
-const mockStats = {
-  total_users: 5420,
-  total_teachers: 342,
-  total_students: 4850,
-  total_parents: 228,
-  active_bookings: 156,
-  pending_approvals: 23,
-  monthly_revenue: 125000,
-  revenue_change: 12.5,
-  new_users_today: 48,
-  new_users_change: 8.3,
-};
-
-const mockPendingTeachers: PendingTeacher[] = [
-  {
-    id: '1',
-    name: 'أحمد محمد الغامدي',
-    email: 'ahmed.g@email.com',
-    phone: '+966 50 123 4567',
-    subjects: ['الرياضيات', 'الفيزياء'],
-    experience_years: 8,
-    submitted_at: '2024-01-15',
-    documents_count: 4,
-    avatar_url: null,
-  },
-  {
-    id: '2',
-    name: 'فاطمة علي السعيد',
-    email: 'fatima.s@email.com',
-    phone: '+966 55 987 6543',
-    subjects: ['اللغة العربية', 'الأدب'],
-    experience_years: 12,
-    submitted_at: '2024-01-14',
-    documents_count: 5,
-    avatar_url: null,
-  },
-  {
-    id: '3',
-    name: 'خالد عبدالله النعيمي',
-    email: 'khaled.n@email.com',
-    phone: '+966 54 555 1234',
-    subjects: ['الكيمياء'],
-    experience_years: 5,
-    submitted_at: '2024-01-13',
-    documents_count: 3,
-    avatar_url: null,
-  },
-];
-
-const mockRecentBookings: RecentBooking[] = [
-  {
-    id: 'B001',
-    teacher_name: 'محمد الأحمد',
-    student_name: 'سارة العلي',
-    subject: 'الرياضيات',
-    date: '2024-01-20',
-    status: 'confirmed',
-    amount: 150,
-  },
-  {
-    id: 'B002',
-    teacher_name: 'نورة الخالد',
-    student_name: 'عمر السعيد',
-    subject: 'اللغة الإنجليزية',
-    date: '2024-01-20',
-    status: 'pending',
-    amount: 120,
-  },
-  {
-    id: 'B003',
-    teacher_name: 'سلطان الفهد',
-    student_name: 'ليان محمد',
-    subject: 'الفيزياء',
-    date: '2024-01-19',
-    status: 'cancelled',
-    amount: 180,
-  },
-];
-
-const mockAlerts: SystemAlert[] = [
-  {
-    id: '1',
-    type: 'warning',
-    message: 'هناك 5 معلمين بتقييمات منخفضة تحتاج مراجعة',
-    created_at: '2024-01-16 10:30',
-  },
-  {
-    id: '2',
-    type: 'error',
-    message: 'فشل في معالجة 3 عمليات دفع',
-    created_at: '2024-01-16 09:15',
-  },
-  {
-    id: '3',
-    type: 'info',
-    message: 'تحديث النظام المجدول غداً الساعة 3 صباحاً',
-    created_at: '2024-01-15 18:00',
-  },
-];
 
 export function AdminDashboard() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'teachers' | 'bookings' | 'users'>('overview');
+  const [activeTab, setActiveTab] = React.useState('overview');
 
-  const handleApproveTeacher = (id: string) => {
-    console.log('Approve teacher:', id);
-    // API call
-  };
+  // Calculate stats
+  const totalTeachers = mockTeacherProfiles.length;
+  const totalStudents = mockUsers.filter(u => u.role === 'student').length;
+  const totalParents = mockUsers.filter(u => u.role === 'parent').length;
+  const totalChildren = mockUsers.filter(u => u.role === 'child').length;
+  const totalBookings = mockBookings.length;
+  const pendingBookings = mockBookings.filter(b => b.status === 'pending').length;
+  const confirmedBookings = mockBookings.filter(b => b.status === 'confirmed').length;
+  const completedBookings = mockBookings.filter(b => b.status === 'completed').length;
+  const cancelledBookings = mockBookings.filter(b => b.status === 'cancelled').length;
 
-  const handleRejectTeacher = (id: string) => {
-    console.log('Reject teacher:', id);
-    // API call
-  };
-
-  const handleViewTeacher = (id: string) => {
-    console.log('View teacher:', id);
-    // Navigate to teacher details
-  };
+  const tabs = [
+    { id: 'overview', label: 'نظرة عامة', icon: '📊' },
+    { id: 'teachers', label: 'المعلمين', icon: '👨‍🏫' },
+    { id: 'students', label: 'الطلاب', icon: '🎓' },
+    { id: 'bookings', label: 'الحجوزات', icon: '📅' },
+    { id: 'reports', label: 'التقارير', icon: '📈' },
+    { id: 'settings', label: 'الإعدادات', icon: '⚙️' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                لوحة تحكم المدير
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                مرحباً بك، إدارة المنصة
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">
-                  {mockAlerts.length}
-                </span>
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      {/* Sidebar */}
+      <aside className="fixed top-0 right-0 h-screen w-64 border-l hidden lg:block" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
+        <div className="p-6">
+          {/* Logo */}
+          <Link href={ROUTES.HOME}>
+            <h1 
+              className="text-2xl font-bold mb-8"
+              style={{
+                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              لهلوب
+            </h1>
+          </Link>
 
-          {/* Tabs */}
-          <div className="flex gap-1 mt-4 -mb-px overflow-x-auto">
-            {[
-              { id: 'overview', label: 'نظرة عامة' },
-              { id: 'teachers', label: 'المعلمون' },
-              { id: 'bookings', label: 'الحجوزات' },
-              { id: 'users', label: 'المستخدمون' },
-            ].map((tab) => (
+          {/* Navigation */}
+          <nav className="space-y-2">
+            {tabs.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setSelectedTab(tab.id as typeof selectedTab)}
-                className={cn(
-                  'px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
-                  selectedTab === tab.id
-                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
-                )}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-right transition-all duration-300 ${
+                  activeTab === tab.id 
+                    ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 font-semibold' 
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
               >
-                {tab.label}
+                <span className="text-xl">{tab.icon}</span>
+                <span>{tab.label}</span>
               </button>
             ))}
+          </nav>
+        </div>
+
+        {/* User Info */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+              أ
+            </div>
+            <div className="flex-1">
+              <p className="font-medium text-sm">المدير</p>
+              <p className="text-xs text-gray-500">admin@lhlop.com</p>
+            </div>
+            <ThemeToggle />
           </div>
         </div>
-      </header>
+      </aside>
 
-      <main className="p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard
-            title="إجمالي المستخدمين"
-            value={mockStats.total_users.toLocaleString('ar-SA')}
-            icon={<Users className="h-5 w-5" />}
-            trend={{ value: mockStats.new_users_change, isPositive: true }}
-            description={`${mockStats.new_users_today} مستخدم جديد اليوم`}
-          />
-          <StatsCard
-            title="المعلمون النشطون"
-            value={mockStats.total_teachers.toLocaleString('ar-SA')}
-            icon={<GraduationCap className="h-5 w-5" />}
-            trend={{ value: 5.2, isPositive: true }}
-          />
-          <StatsCard
-            title="الحجوزات النشطة"
-            value={mockStats.active_bookings.toLocaleString('ar-SA')}
-            icon={<Calendar className="h-5 w-5" />}
-            trend={{ value: 3.1, isPositive: true }}
-          />
-          <StatsCard
-            title="الإيرادات الشهرية"
-            value={`${(mockStats.monthly_revenue / 1000).toFixed(0)}K ر.س`}
-            icon={<DollarSign className="h-5 w-5" />}
-            trend={{ value: mockStats.revenue_change, isPositive: true }}
-          />
-        </div>
+      {/* Main Content */}
+      <main className="lg:mr-64">
+        {/* Mobile Header */}
+        <header className="lg:hidden sticky top-0 z-50 p-4 border-b backdrop-blur-xl" style={{ background: 'rgba(var(--card-rgb, 255, 255, 255), 0.9)', borderColor: 'var(--border)' }}>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold">لوحة التحكم</h1>
+            <ThemeToggle />
+          </div>
+        </header>
 
-        {/* Alerts */}
-        {mockAlerts.length > 0 && (
-          <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-800">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-yellow-600" />
-                تنبيهات النظام
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {mockAlerts.map((alert) => (
-                  <div
-                    key={alert.id}
-                    className={cn(
-                      'flex items-start gap-3 p-3 rounded-lg',
-                      alert.type === 'error' && 'bg-red-100 dark:bg-red-900/30',
-                      alert.type === 'warning' && 'bg-yellow-100 dark:bg-yellow-900/30',
-                      alert.type === 'info' && 'bg-blue-100 dark:bg-blue-900/30'
-                    )}
-                  >
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-800 dark:text-gray-200">
-                        {alert.message}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">{alert.created_at}</p>
-                    </div>
-                    <Button variant="ghost" size="sm">
-                      عرض
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <div className="p-6 lg:p-8">
+          {/* Page Title */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">مرحباً بك في لوحة التحكم 👋</h1>
+            <p className="text-gray-500 dark:text-gray-400">إليك نظرة عامة على أداء المنصة</p>
+          </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Pending Teacher Approvals */}
-          <Card className="lg:col-span-2">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-lg">
-                طلبات انضمام المعلمين
-                <Badge variant="secondary" className="mr-2">
-                  {mockStats.pending_approvals}
-                </Badge>
-              </CardTitle>
-              <Button variant="outline" size="sm">
-                عرض الكل
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {mockPendingTeachers.map((teacher) => (
-                  <div
-                    key={teacher.id}
-                    className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                  >
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={teacher.avatar_url || undefined} />
-                      <AvatarFallback>{teacher.name.slice(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <h4 className="font-medium text-gray-900 dark:text-white">
-                            {teacher.name}
-                          </h4>
-                          <p className="text-sm text-gray-500">{teacher.email}</p>
-                        </div>
-                        <Badge variant="outline" className="shrink-0">
-                          {teacher.documents_count} مستندات
-                        </Badge>
-                      </div>
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {teacher.subjects.map((subject) => (
-                          <Badge key={subject} variant="secondary" className="text-xs">
-                            {subject}
-                          </Badge>
-                        ))}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2">
-                        خبرة {teacher.experience_years} سنوات • تقدم في{' '}
-                        {new Date(teacher.submitted_at).toLocaleDateString('ar-SA')}
-                      </p>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleViewTeacher(teacher.id)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                        onClick={() => handleApproveTeacher(teacher.id)}
-                      >
-                        <CheckCircle className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => handleRejectTeacher(teacher.id)}
-                      >
-                        <XCircle className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <StatCard 
+              title="إجمالي المعلمين" 
+              value={totalTeachers} 
+              icon="👨‍🏫" 
+              change="+12%"
+              color="from-indigo-500 to-purple-600"
+            />
+            <StatCard 
+              title="إجمالي الطلاب" 
+              value={totalStudents + totalChildren} 
+              icon="🎓" 
+              change="+8%"
+              color="from-blue-500 to-cyan-500"
+            />
+            <StatCard 
+              title="أولياء الأمور" 
+              value={totalParents} 
+              icon="👨‍👩‍👧" 
+              change="+15%"
+              color="from-purple-500 to-pink-500"
+            />
+            <StatCard 
+              title="إجمالي الحجوزات" 
+              value={totalBookings} 
+              icon="📅" 
+              change="+25%"
+              color="from-green-500 to-emerald-500"
+            />
+          </div>
 
-          {/* Quick Stats */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">إحصائيات سريعة</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                    <Users className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <span className="text-sm">الطلاب</span>
-                </div>
-                <span className="font-semibold">
-                  {mockStats.total_students.toLocaleString('ar-SA')}
-                </span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                    <Users className="h-4 w-4 text-purple-600" />
-                  </div>
-                  <span className="text-sm">أولياء الأمور</span>
-                </div>
-                <span className="font-semibold">
-                  {mockStats.total_parents.toLocaleString('ar-SA')}
-                </span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                    <Clock className="h-4 w-4 text-yellow-600" />
-                  </div>
-                  <span className="text-sm">بانتظار الموافقة</span>
-                </div>
-                <span className="font-semibold">
-                  {mockStats.pending_approvals}
-                </span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                    <TrendingUp className="h-4 w-4 text-green-600" />
-                  </div>
-                  <span className="text-sm">نمو هذا الشهر</span>
-                </div>
-                <span className="font-semibold text-green-600">+{mockStats.revenue_change}%</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Bookings */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-lg">آخر الحجوزات</CardTitle>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="بحث..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pr-9 w-48"
-                />
-              </div>
-              <Button variant="outline" size="icon">
-                <Filter className="h-4 w-4" />
-              </Button>
+          {/* Booking Status Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <div className="p-4 rounded-2xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+              <p className="text-sm text-yellow-600 dark:text-yellow-400">قيد الانتظار</p>
+              <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">{pendingBookings}</p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">
-                      رقم الحجز
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">
-                      المعلم
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">
-                      الطالب
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">
-                      المادة
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">
-                      التاريخ
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">
-                      الحالة
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">
-                      المبلغ
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-500">
-                      إجراءات
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mockRecentBookings.map((booking) => (
-                    <tr
-                      key={booking.id}
-                      className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                    >
-                      <td className="py-3 px-4 text-sm font-mono">{booking.id}</td>
-                      <td className="py-3 px-4 text-sm">{booking.teacher_name}</td>
-                      <td className="py-3 px-4 text-sm">{booking.student_name}</td>
-                      <td className="py-3 px-4 text-sm">{booking.subject}</td>
-                      <td className="py-3 px-4 text-sm">
-                        {new Date(booking.date).toLocaleDateString('ar-SA')}
+            <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-blue-600 dark:text-blue-400">مؤكدة</p>
+              <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{confirmedBookings}</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+              <p className="text-sm text-green-600 dark:text-green-400">مكتملة</p>
+              <p className="text-2xl font-bold text-green-700 dark:text-green-300">{completedBookings}</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+              <p className="text-sm text-red-600 dark:text-red-400">ملغية</p>
+              <p className="text-2xl font-bold text-red-700 dark:text-red-300">{cancelledBookings}</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+              <p className="text-sm text-purple-600 dark:text-purple-400">قيد المراجعة</p>
+              <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">0</p>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-4">إجراءات سريعة</h2>
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+              <QuickAction icon="➕" label="إضافة معلم" />
+              <QuickAction icon="👥" label="إدارة المستخدمين" />
+              <QuickAction icon="📚" label="إدارة المواد" />
+              <QuickAction icon="🏙️" label="إدارة المدن" />
+              <QuickAction icon="📊" label="التقارير" />
+              <QuickAction icon="⚙️" label="الإعدادات" />
+            </div>
+          </div>
+
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Top Teachers */}
+            <div className="premium-card p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold">أفضل المعلمين</h2>
+                <Link href={ROUTES.TEACHERS} className="text-sm text-indigo-600 hover:underline">
+                  عرض الكل
+                </Link>
+              </div>
+              <div className="space-y-4">
+                {mockTeacherProfiles.slice(0, 5).map((teacher, index) => (
+                  <div key={teacher.id} className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
+                      index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : index === 2 ? 'bg-amber-600' : 'bg-gray-300'
+                    }`}>
+                      {index + 1}
+                    </span>
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                      {teacher.user?.full_name?.charAt(0) || '👤'}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium">{teacher.user?.full_name || 'معلم'}</p>
+                      <p className="text-xs text-gray-500">{teacher.specialization}</p>
+                    </div>
+                    <div className="text-left">
+                      <p className="font-bold text-yellow-500">⭐ {teacher.average_rating}</p>
+                      <p className="text-xs text-gray-500">{teacher.total_reviews} تقييم</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Recent Bookings */}
+            <div className="premium-card p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold">آخر الحجوزات</h2>
+                <button className="text-sm text-indigo-600 hover:underline">
+                  عرض الكل
+                </button>
+              </div>
+              <div className="space-y-4">
+                {mockBookings.slice(0, 5).map((booking) => {
+                  const teacher = booking.teacher;
+                  return (
+                    <div key={booking.id} className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white">
+                        📅
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium">{teacher?.user?.full_name || 'معلم'}</p>
+                        <p className="text-xs text-gray-500">{booking.booking_date} - {booking.start_time}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        booking.status === 'confirmed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                        booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                        booking.status === 'completed' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                        'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                      }`}>
+                        {booking.status === 'confirmed' ? 'مؤكد' :
+                         booking.status === 'pending' ? 'قيد الانتظار' :
+                         booking.status === 'completed' ? 'مكتمل' : 'ملغي'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Teacher Approvals */}
+          <div className="mt-8">
+            <div className="premium-card p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold">طلبات انضمام المعلمين</h2>
+                <span className="px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full text-sm font-medium">
+                  2 بانتظار المراجعة
+                </span>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b" style={{ borderColor: 'var(--border)' }}>
+                      <th className="text-right py-3 px-4 font-medium text-gray-500">المعلم</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-500">التخصص</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-500">المؤهل</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-500">تاريخ الطلب</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-500">الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b hover:bg-gray-50 dark:hover:bg-gray-800" style={{ borderColor: 'var(--border)' }}>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold">
+                            س
+                          </div>
+                          <div>
+                            <p className="font-medium">سارة العتيبي</p>
+                            <p className="text-xs text-gray-500">sara@email.com</p>
+                          </div>
+                        </div>
                       </td>
-                      <td className="py-3 px-4">
-                        <Badge
-                          variant={
-                            booking.status === 'confirmed'
-                              ? 'default'
-                              : booking.status === 'pending'
-                              ? 'secondary'
-                              : 'error'
-                          }
-                        >
-                          {booking.status === 'confirmed'
-                            ? 'مؤكد'
-                            : booking.status === 'pending'
-                            ? 'معلق'
-                            : 'ملغي'}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 text-sm font-medium">
-                        {booking.amount} ر.س
-                      </td>
-                      <td className="py-3 px-4">
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
+                      <td className="py-4 px-4">اللغة الإنجليزية</td>
+                      <td className="py-4 px-4">ماجستير</td>
+                      <td className="py-4 px-4 text-gray-500">2024-01-15</td>
+                      <td className="py-4 px-4">
+                        <div className="flex gap-2">
+                          <button className="px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 text-sm font-medium transition-colors">
+                            قبول
+                          </button>
+                          <button className="px-3 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 text-sm font-medium transition-colors">
+                            رفض
+                          </button>
+                        </div>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-500">عرض 1-3 من 156 حجز</p>
-              <div className="flex items-center gap-1">
-                <Button variant="outline" size="icon" disabled>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="sm">1</Button>
-                <Button variant="ghost" size="sm">2</Button>
-                <Button variant="ghost" size="sm">3</Button>
-                <span className="px-2 text-gray-400">...</span>
-                <Button variant="ghost" size="sm">52</Button>
-                <Button variant="outline" size="icon">
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
+                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <td className="py-4 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white font-bold">
+                            ع
+                          </div>
+                          <div>
+                            <p className="font-medium">عبدالله الحربي</p>
+                            <p className="text-xs text-gray-500">abdullah@email.com</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">الرياضيات</td>
+                      <td className="py-4 px-4">بكالوريوس</td>
+                      <td className="py-4 px-4 text-gray-500">2024-01-14</td>
+                      <td className="py-4 px-4">
+                        <div className="flex gap-2">
+                          <button className="px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 text-sm font-medium transition-colors">
+                            قبول
+                          </button>
+                          <button className="px-3 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 text-sm font-medium transition-colors">
+                            رفض
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
     </div>
   );

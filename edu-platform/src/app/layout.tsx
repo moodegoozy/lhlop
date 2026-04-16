@@ -19,12 +19,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "منصة المعلمين - احجز معلمك الخاص",
-    template: "%s | منصة المعلمين",
+    default: "لهلوب - منصتك الأولى للتميز",
+    template: "%s | لهلوب",
   },
   description:
-    "منصة سعودية متخصصة في ربط الطلاب بأفضل المعلمين والمعلمات. احجز دروسك الخصوصية أونلاين أو حضورياً بسهولة.",
+    "لهلوب - منصة سعودية متخصصة في ربط الطلاب بأفضل المعلمين والمعلمات. احجز دروسك الخصوصية أونلاين أو حضورياً بسهولة.",
   keywords: [
+    "لهلوب",
     "معلم خصوصي",
     "دروس خصوصية",
     "تعليم",
@@ -33,29 +34,29 @@ export const metadata: Metadata = {
     "حجز معلم",
     "دروس أونلاين",
   ],
-  authors: [{ name: "منصة المعلمين" }],
-  creator: "منصة المعلمين",
+  authors: [{ name: "لهلوب" }],
+  creator: "لهلوب",
   openGraph: {
     type: "website",
     locale: "ar_SA",
     url: "https://lhlop.com",
-    siteName: "منصة المعلمين",
-    title: "منصة المعلمين - احجز معلمك الخاص",
+    siteName: "لهلوب",
+    title: "لهلوب - منصتك الأولى للتميز",
     description:
-      "منصة سعودية متخصصة في ربط الطلاب بأفضل المعلمين والمعلمات. احجز دروسك الخصوصية أونلاين أو حضورياً.",
+      "لهلوب - منصة سعودية متخصصة في ربط الطلاب بأفضل المعلمين والمعلمات. احجز دروسك الخصوصية أونلاين أو حضورياً.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "منصة المعلمين",
+        alt: "لهلوب",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "منصة المعلمين - احجز معلمك الخاص",
-    description: "احجز دروسك الخصوصية أونلاين أو حضورياً",
+    title: "لهلوب - منصتك الأولى للتميز",
+    description: "منصتك الأولى للتميز - احجز دروسك الخصوصية بسهولة",
     images: ["/og-image.png"],
   },
   robots: {
@@ -75,8 +76,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f0f23" },
   ],
   viewportFit: "cover",
 };
@@ -93,7 +94,21 @@ export default function RootLayout({
       className={`${cairo.variable} ${inter.variable} h-full`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans antialiased">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const theme = localStorage.getItem('theme');
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col font-sans antialiased" style={{ background: 'var(--background)', color: 'var(--foreground)' }}>
         {children}
       </body>
     </html>

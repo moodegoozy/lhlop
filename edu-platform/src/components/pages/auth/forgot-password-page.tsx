@@ -2,159 +2,80 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Button, Input, Card } from '@/components/ui';
 import { ROUTES } from '@/lib/constants';
-import { t } from '@/lib/translations';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [error, setError] = React.useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setIsLoading(true);
-    setError(null);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    // In production, this would send a reset email
-    setIsSubmitted(true);
-    setIsLoading(false);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setIsSuccess(true);
+    } catch { setError('حدث خطأ، حاول مرة أخرى'); }
+    finally { setIsLoading(false); }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-50 dark:bg-gray-900">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href={ROUTES.HOME} className="inline-block">
-            <h1 className="text-3xl font-bold text-primary-600">
-              {t('common.appName')}
-            </h1>
-          </Link>
-        </div>
+    <div dir="rtl" style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'linear-gradient(135deg, #0f0a29 0%, #1a1048 25%, #2d1b69 50%, #4c1d95 75%, #6d28d9 100%)',
+      fontFamily: "'Tajawal', sans-serif", position: 'relative', overflow: 'hidden', padding: '2rem'
+    }}>
+      <div style={{ position: 'absolute', width: '600px', height: '600px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, transparent 70%)', filter: 'blur(100px)', top: '-200px', right: '-200px' }} />
+      <div style={{ position: 'absolute', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(245, 158, 11, 0.4) 0%, transparent 70%)', filter: 'blur(100px)', bottom: '-150px', left: '-150px' }} />
 
-        <Card className="p-6 sm:p-8">
-          {isSubmitted ? (
-            // Success State
-            <div className="text-center py-4">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <svg
-                  className="h-8 w-8 text-green-600 dark:text-green-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                {t('auth.resetEmailSent')}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {t('auth.resetEmailSentDescription', { email })}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                لم تستلم البريد؟ تحقق من مجلد الرسائل غير المرغوب فيها أو{' '}
-                <button
-                  onClick={() => setIsSubmitted(false)}
-                  className="text-primary-600 hover:underline"
-                >
-                  حاول مرة أخرى
-                </button>
-              </p>
-              <Link href={ROUTES.LOGIN}>
-                <Button className="w-full">
-                  {t('auth.backToLogin')}
-                </Button>
+      <div style={{ width: '100%', maxWidth: '420px', position: 'relative', zIndex: 10 }}>
+        <div style={{ background: 'white', borderRadius: '2rem', padding: '2.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 60px rgba(139, 92, 246, 0.15)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+            <Link href={ROUTES.HOME}><span style={{ fontSize: '1.75rem', fontWeight: 900, cursor: 'pointer', background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>لهلوب</span></Link>
+            <ThemeToggle />
+          </div>
+
+          {isSuccess ? (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ width: '80px', height: '80px', margin: '0 auto 1.5rem', borderRadius: '50%', background: 'linear-gradient(135deg, #22c55e, #16a34a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>✓</div>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '1rem', color: '#1a1a2e' }}>تم الإرسال بنجاح! 📧</h2>
+              <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني</p>
+              <Link href={ROUTES.LOGIN} style={{ display: 'inline-block', width: '100%', padding: '1rem', fontSize: '1rem', fontWeight: 700, color: 'white', background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', border: 'none', borderRadius: '1rem', textDecoration: 'none', textAlign: 'center' }}>
+                العودة لتسجيل الدخول
               </Link>
             </div>
           ) : (
-            // Form State
             <>
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-                  <svg
-                    className="h-8 w-8 text-primary-600 dark:text-primary-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                  {t('auth.forgotPasswordTitle')}
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {t('auth.forgotPasswordDescription')}
-                </p>
+              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <div style={{ width: '60px', height: '60px', margin: '0 auto 1rem', borderRadius: '50%', background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(139,92,246,0.1))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem' }}>🔐</div>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.5rem', color: '#1a1a2e' }}>نسيت كلمة المرور؟</h2>
+                <p style={{ color: '#64748b' }}>أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Error Message */}
-                {error && (
-                  <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                    <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
-                  </div>
-                )}
+              {error && (<div style={{ marginBottom: '1.5rem', padding: '1rem', borderRadius: '1rem', background: 'rgba(239, 68, 68, 0.1)', border: '2px solid rgba(239, 68, 68, 0.3)', color: '#dc2626', textAlign: 'center', fontWeight: 700 }}>{error}</div>)}
 
-                {/* Email */}
-                <Input
-                  label={t('auth.email')}
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@email.com"
-                  required
-                  autoComplete="email"
-                  leftIcon={
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  }
-                />
-
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  className="w-full"
-                  size="lg"
-                  isLoading={isLoading}
-                >
-                  {t('auth.sendResetLink')}
-                </Button>
+              <form onSubmit={handleSubmit}>
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.5rem', color: '#374151' }}>البريد الإلكتروني</label>
+                  <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="example@email.com" style={{ width: '100%', padding: '1rem 1.25rem', fontSize: '1rem', border: '2px solid #e5e7eb', borderRadius: '1rem', background: '#f9fafb', color: '#1a1a2e', outline: 'none', fontFamily: 'inherit' }} onFocus={e => { e.target.style.borderColor = '#8b5cf6'; e.target.style.background = 'white'; }} onBlur={e => { e.target.style.borderColor = '#e5e7eb'; e.target.style.background = '#f9fafb'; }} />
+                </div>
+                <button type="submit" disabled={isLoading} style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', fontWeight: 700, color: 'white', background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', border: 'none', borderRadius: '1rem', cursor: isLoading ? 'not-allowed' : 'pointer', opacity: isLoading ? 0.7 : 1, boxShadow: '0 8px 25px rgba(139,92,246,0.4)', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                  {isLoading ? (<><span style={{ width: '20px', height: '20px', border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid white', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />جاري الإرسال...</>) : 'إرسال رابط الاستعادة ←'}
+                </button>
               </form>
 
-              {/* Back to Login */}
-              <div className="mt-6 text-center">
-                <Link
-                  href={ROUTES.LOGIN}
-                  className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
-                >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                  {t('auth.backToLogin')}
-                </Link>
-              </div>
+              <p style={{ marginTop: '2rem', textAlign: 'center', color: '#64748b' }}>
+                <Link href={ROUTES.LOGIN} style={{ fontWeight: 700, color: '#8b5cf6', textDecoration: 'none' }}>← العودة لتسجيل الدخول</Link>
+              </p>
             </>
           )}
-        </Card>
+        </div>
       </div>
+
+      <style jsx global>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

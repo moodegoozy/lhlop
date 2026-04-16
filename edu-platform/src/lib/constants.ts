@@ -3,6 +3,18 @@
 // ============================================
 
 export const APP_NAME = 'منصة التدريس';
+
+// ============================================
+// User Roles
+// ============================================
+
+export const USER_ROLES = {
+  ADMIN: 'admin',
+  TEACHER: 'teacher',
+  PARENT: 'parent',
+  STUDENT: 'student',
+  CHILD: 'child',
+} as const;
 export const APP_NAME_EN = 'Edu Platform';
 export const APP_DESCRIPTION = 'منصة تعليمية متكاملة لربط المعلمين بالطلاب وأولياء الأمور';
 
@@ -32,53 +44,23 @@ export const ROUTES = {
 
   // Booking
   BOOK_TEACHER: (id: string) => `/booking/${id}`,
+  BOOKING_CONFIRMATION: '/booking/confirmation',
   BOOKING_DETAILS: (id: string) => `/booking/details/${id}`,
 
-  // Dashboard - Admin
-  ADMIN_DASHBOARD: '/dashboard/admin',
-  ADMIN_PROFILE: '/dashboard/admin/profile',
-  ADMIN_USERS: '/dashboard/admin/users',
-  ADMIN_TEACHERS: '/dashboard/admin/teachers',
-  ADMIN_APPROVALS: '/dashboard/admin/approvals',
-  ADMIN_BOOKINGS: '/dashboard/admin/bookings',
-  ADMIN_SUBJECTS: '/dashboard/admin/subjects',
-  ADMIN_SERVICES: '/dashboard/admin/services',
-  ADMIN_CITIES: '/dashboard/admin/cities',
-  ADMIN_REPORTS: '/dashboard/admin/reports',
-  ADMIN_LOGS: '/dashboard/admin/logs',
-  ADMIN_SETTINGS: '/dashboard/admin/settings',
+  // Dashboard - Admin (actual route: /admin)
+  ADMIN_DASHBOARD: '/admin',
 
-  // Dashboard - Teacher
-  TEACHER_DASHBOARD: '/dashboard/teacher',
-  TEACHER_PROFILE: '/dashboard/teacher/profile',
-  TEACHER_AVAILABILITY: '/dashboard/teacher/availability',
-  TEACHER_BOOKINGS: '/dashboard/teacher/bookings',
-  TEACHER_REVIEWS: '/dashboard/teacher/reviews',
-  TEACHER_CERTIFICATES: '/dashboard/teacher/certificates',
-  TEACHER_NOTIFICATIONS: '/dashboard/teacher/notifications',
+  // Dashboard - Teacher (actual route: /teacher/dashboard)
+  TEACHER_DASHBOARD: '/teacher/dashboard',
 
-  // Dashboard - Parent
-  PARENT_DASHBOARD: '/dashboard/parent',
-  PARENT_PROFILE: '/dashboard/parent/profile',
-  PARENT_CHILDREN: '/dashboard/parent/children',
-  PARENT_CHILD: (id: string) => `/dashboard/parent/children/${id}`,
-  PARENT_ADD_CHILD: '/dashboard/parent/children/new',
-  PARENT_BOOKINGS: '/dashboard/parent/bookings',
-  PARENT_NOTIFICATIONS: '/dashboard/parent/notifications',
+  // Dashboard - Parent (actual route: /parent/dashboard)
+  PARENT_DASHBOARD: '/parent/dashboard',
 
-  // Dashboard - Child
-  CHILD_DASHBOARD: '/dashboard/child',
-  CHILD_PROFILE: '/dashboard/child/profile',
-  CHILD_LESSONS: '/dashboard/child/lessons',
-  CHILD_SCHEDULE: '/dashboard/child/schedule',
+  // Dashboard - Child (actual route: /child/dashboard)
+  CHILD_DASHBOARD: '/child/dashboard',
 
-  // Dashboard - Student
-  STUDENT_DASHBOARD: '/dashboard/student',
-  STUDENT_PROFILE: '/dashboard/student/profile',
-  STUDENT_BOOKINGS: '/dashboard/student/bookings',
-  STUDENT_SCHEDULE: '/dashboard/student/schedule',
-  STUDENT_REVIEWS: '/dashboard/student/reviews',
-  STUDENT_NOTIFICATIONS: '/dashboard/student/notifications',
+  // Dashboard - Student (actual route: /student/dashboard)
+  STUDENT_DASHBOARD: '/student/dashboard',
 } as const;
 
 // ============================================
